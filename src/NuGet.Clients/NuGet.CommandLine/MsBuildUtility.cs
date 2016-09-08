@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Microsoft.Build.Evaluation;
+using Microsoft.VisualStudio.Setup.Configuration;
 using NuGet.Commands;
 using NuGet.Common;
 
@@ -314,11 +315,11 @@ namespace NuGet.CommandLine
         /// <returns>The matching toolset.</returns>
         /// <remarks>This method is not intended to be called directly. It's marked public so that it
         /// can be called by unit tests.</remarks>
-        public static Toolset SelectMsbuildToolset(
+        public static MsBuildToolsetEx SelectMsbuildToolset(
             Version msbuildVersion,
-            IEnumerable<Toolset> installedToolsets)
+            IEnumerable<MsBuildToolsetEx> installedToolsets)
         {
-            Toolset selectedToolset;
+            MsBuildToolsetEx selectedToolset;
             if (msbuildVersion == null)
             {
                 // MSBuild does not exist in PATH. In this case, the highest installed version is used
@@ -373,22 +374,46 @@ namespace NuGet.CommandLine
         /// <returns>The msbuild directory.</returns>
         public static string GetMsbuildDirectory(string userVersion, IConsole console)
         {
-            List<Toolset> installedToolsets;
+            List<MsBuildToolsetEx> installedToolsets;
             using (var projectCollection = new ProjectCollection())
             {
-                installedToolsets = projectCollection.Toolsets.OrderByDescending(
+                installedToolsets = MsBuildToolsetEx.AsMsToolsetExCollection(projectCollection.Toolsets).OrderByDescending(
                     toolset => SafeParseVersion(toolset.ToolsVersion)).ToList();
+            }
+
+            var installedSxsToolsets = GetInstalledSxsToolsets()?.ToList();
+            if (installedToolsets == null)
+            {
+                installedToolsets = installedSxsToolsets;
+            }
+            else if (installedSxsToolsets != null)
+            {
+                installedToolsets.AddRange(installedSxsToolsets);
             }
 
             return GetMsbuildDirectoryInternal(userVersion, console, installedToolsets);
         }
+
+
+        // ideas: have a type which included Toolset instance, along with a date. Process collections of this type only.
+        // let rules be: is it in msbuild_exe_path? Is it in PATH? Is it the highest version (processing major/
+        // minor rules as below)? If we have a stalemate between equal versions, can we resolve via latest install date?
+        // How about adding an explicit path into the mix which overrides all?
+
+        // Also refactor together the duplicated logic below
+
+        // And write tests for all, refactoring for testability if necessary
+
+
+
+
 
         // This method is called by GetMsbuildDirectory(). This method is not intended to be called directly.
         // It's marked public so that it can be called by unit tests.
         public static string GetMsbuildDirectoryInternal(
             string userVersion,
             IConsole console,
-            IEnumerable<Toolset> installedToolsets)
+            IEnumerable<MsBuildToolsetEx> installedToolsets)
         {
             if (string.IsNullOrEmpty(userVersion))
             {
@@ -419,13 +444,13 @@ namespace NuGet.CommandLine
             }
             else
             {
-                // append ".0" if the userVersion is a number
+                // Force version string to 1 decimal place
                 string userVersionString = userVersion;
-                int unused;
-
-                if (int.TryParse(userVersion, out unused))
+                decimal parsedVersion = 0;
+                if (decimal.TryParse(userVersion, out parsedVersion))
                 {
-                    userVersionString = userVersion + ".0";
+                    decimal adjustedVersion = (decimal)(((int)(parsedVersion * 10)) / 10F);
+                    userVersionString = adjustedVersion.ToString("F1");
                 }
 
                 Version ver;
@@ -571,6 +596,157 @@ namespace NuGet.CommandLine
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Finds instances of MSBuild installed for versions after VS14
+        /// The rules for instance discovery are:
+        /// 1. If there is an MSBuild instance on the PATH, take the first one discovered
+        /// 2. Otherwise, take the most recent one installed
+        /// </summary>
+        /// <returns>Directory of instance we will use; null on fail (silent)</returns>
+        //public static string FindMSBuildInstance()
+        //{
+        //    var instances = GetInstalledInstances();
+        //    if (instances == null)
+        //    {
+        //        return null;
+        //    }
+
+        //    // Find first item in the MSBUILD_EXE_PATH to match an instance
+        //    var searchPath = Environment.GetEnvironmentVariable("MSBUILD_EXE_PATH");
+        //    if (!string.IsNullOrEmpty(searchPath))
+        //    {
+        //        var searchPathItems = new List<string>(searchPath.Split(new char[] { ';' }));
+        //        var matchedItem = searchPathItems.FirstOrDefault(searchPathItem =>
+        //        {
+        //            var matchedInstance = instances.FirstOrDefault(instance =>
+        //            {
+        //                var installationPath = instance.GetInstallationPath();
+        //                if (string.IsNullOrEmpty(installationPath))
+        //                {
+        //                    return false;
+        //                }
+
+        //                var testMSBuildPath = Path.Combine(installationPath, "MSBuild");
+        //                return testMSBuildPath.Equals(searchPathItem, StringComparison.InvariantCultureIgnoreCase);
+        //            });
+
+        //            return matchedInstance != null;
+        //        });
+
+        //        if (!string.IsNullOrEmpty(matchedItem))
+        //        {
+        //            return matchedItem;
+        //        }
+        //    }
+
+        //    // PATH search failed - return latest install
+        //    string msBuildPath = string.Empty;
+        //    var latestInstance = instances.OrderByDescending(instance => ConvertFILETIMEToDateTime(instance.GetInstallDate()))
+        //        .FirstOrDefault(instance =>
+        //        {
+        //            // Ensure an msbuild.exe in the VS install
+        //            msBuildPath = GetMSBuildPathFromVsPath(instance.GetInstallationPath());
+        //            return !string.IsNullOrEmpty(msBuildPath);
+        //        });
+
+        //    if (string.IsNullOrEmpty(msBuildPath))
+        //    {
+        //        return null;
+        //    }
+
+        //    return msBuildPath;
+        //}
+
+        private static IEnumerable<MsBuildToolsetEx> GetInstalledSxsToolsets()
+        {
+            ISetupConfiguration configuration;
+            try
+            {
+                configuration = new SetupConfiguration() as ISetupConfiguration2;
+            }
+            catch (Exception)
+            {
+                return null; // No COM class
+            }
+
+            if (configuration == null)
+            {
+                return null;
+            }
+
+            var enumerator = configuration.EnumInstances();
+            if (enumerator == null)
+            {
+                return null;
+            }
+
+            var setupInstances = new List<MsBuildToolsetEx>();
+            while (true)
+            {
+                var fetchedInstances = new ISetupInstance[3];
+                int fetched;
+                enumerator.Next(fetchedInstances.Length, fetchedInstances, out fetched);
+                if (fetched == 0)
+                {
+                    break;
+                }
+
+                // fetched will return the value 3 even if only one instance returned                
+                int index = fetched;
+                while (index > 0)
+                {
+                    if (fetchedInstances[index] != null)
+                    {
+                        setupInstances.Add(new MsBuildToolsetEx(fetchedInstances[index]));
+                    }
+
+                    index--;
+                }
+            }
+
+            if (setupInstances.Count == 0)
+            {
+                return null;
+            }
+
+            return setupInstances;
+        }
+
+        private static string GetMSBuildPathFromVsPath(string vsPath)
+        {
+            if (string.IsNullOrEmpty(vsPath))
+            {
+                return null;
+            }
+
+            string msBuildRoot = Path.Combine(vsPath, "MSBuild");
+            if (!Directory.Exists(msBuildRoot))
+            {
+                return null;
+            }
+
+            // Enumerate all versions of MSBuild present, take the highest
+            string msBuildPath = string.Empty;
+            var highestVersionRoot = Directory.EnumerateDirectories(msBuildRoot).OrderByDescending(dir =>
+            {
+                var dirName = new DirectoryInfo(dir).Name;
+                float dirValue;
+                if (float.TryParse(dirName, out dirValue))
+                {
+                    return dirValue;
+                }
+
+                return 0F;
+            })
+            .FirstOrDefault(dir =>
+            {
+                msBuildPath = Path.Combine(dir, "bin");
+                return File.Exists(Path.Combine(msBuildPath, "msbuild.exe"));
+            });
+
+            return msBuildPath;
         }
     }
 }

@@ -12,20 +12,20 @@ namespace NuGet.CommandLine.Test
         {
             using (var projectCollection = new ProjectCollection())
             {
-                var toolsetV14 = new Toolset(
+                var toolsetV14 = new MsBuildToolsetEx(new Toolset(
                     "14.0", "v14path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetV12 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetV12 = new MsBuildToolsetEx(new Toolset(
                     "12.0", "v12path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetV4 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetV4 = new MsBuildToolsetEx(new Toolset(
                     "4.0", "v4path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
+                    msbuildOverrideTasksPath: null));
 
-                var installedToolsets = new List<Toolset> {
+                var installedToolsets = new List<MsBuildToolsetEx> {
                     toolsetV14, toolsetV12, toolsetV4
                 };
 
@@ -43,24 +43,24 @@ namespace NuGet.CommandLine.Test
         {
             using (var projectCollection = new ProjectCollection())
             {
-                var toolsetV14 = new Toolset(
+                var toolsetV14 = new MsBuildToolsetEx(new Toolset(
                     "14.0", "v14path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetV12_5 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetV12_5 = new MsBuildToolsetEx(new Toolset(
                     "12.5", "v12_5path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetV12 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetV12 = new MsBuildToolsetEx(new Toolset(
                     "12.0", "v12path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetV4 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetV4 = new MsBuildToolsetEx(new Toolset(
                     "4.0", "v4path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
+                    msbuildOverrideTasksPath: null));
 
-                var installedToolsets = new List<Toolset> {
+                var installedToolsets = new List<MsBuildToolsetEx> {
                     toolsetV14, toolsetV12_5, toolsetV12, toolsetV4
                 };
 
@@ -79,20 +79,20 @@ namespace NuGet.CommandLine.Test
         {
             using (var projectCollection = new ProjectCollection())
             {
-                var toolsetV14 = new Toolset(
+                var toolsetV14 = new MsBuildToolsetEx(new Toolset(
                     "14.0", "v14path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetV12 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetV12 = new MsBuildToolsetEx(new Toolset(
                     "12.0", "v12path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetV4 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetV4 = new MsBuildToolsetEx(new Toolset(
                     "4.0", "v4path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
+                    msbuildOverrideTasksPath: null));
 
-                var installedToolsets = new List<Toolset> {
+                var installedToolsets = new List<MsBuildToolsetEx> {
                     toolsetV14, toolsetV12, toolsetV4
                 };
 
@@ -111,20 +111,20 @@ namespace NuGet.CommandLine.Test
         {
             using (var projectCollection = new ProjectCollection())
             {
-                var toolsetV14 = new Toolset(
+                var toolsetV14 = new MsBuildToolsetEx(new Toolset(
                     "14.0", "v14path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetV12 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetV12 = new MsBuildToolsetEx(new Toolset(
                     "12.0", "v12path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetV4 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetV4 = new MsBuildToolsetEx(new Toolset(
                     "4.0", "v4path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
+                    msbuildOverrideTasksPath: null));
 
-                var installedToolsets = new List<Toolset> {
+                var installedToolsets = new List<MsBuildToolsetEx> {
                     toolsetV14, toolsetV12, toolsetV4
                 };
 
@@ -144,20 +144,20 @@ namespace NuGet.CommandLine.Test
             using (var projectCollection = new ProjectCollection())
             {
                 // Arrange
-                var toolsetV14 = new Toolset(
+                var toolsetV14 = new MsBuildToolsetEx(new Toolset(
                     "14.0", "v14path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetV12 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetV12 = new MsBuildToolsetEx(new Toolset(
                     "12.0", "v12path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetV4 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetV4 = new MsBuildToolsetEx(new Toolset(
                     "4.0", "v4path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
+                    msbuildOverrideTasksPath: null));
 
-                var installedToolsets = new List<Toolset> {
+                var installedToolsets = new List<MsBuildToolsetEx> {
                     toolsetV14, toolsetV12, toolsetV4
                 };
 
@@ -179,20 +179,20 @@ namespace NuGet.CommandLine.Test
             using (var projectCollection = new ProjectCollection())
             {
                 // Arrange
-                var toolsetV14 = new Toolset(
+                var toolsetV14 = new MsBuildToolsetEx(new Toolset(
                     "14.0", "v14path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetV12 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetV12 = new MsBuildToolsetEx(new Toolset(
                     "12.0", "v12path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetV4 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetV4 = new MsBuildToolsetEx(new Toolset(
                     "4.0", "v4path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
+                    msbuildOverrideTasksPath: null));
 
-                var installedToolsets = new List<Toolset> {
+                var installedToolsets = new List<MsBuildToolsetEx> {
                     toolsetV14, toolsetV12, toolsetV4
                 };
 
@@ -221,20 +221,20 @@ namespace NuGet.CommandLine.Test
             using (var projectCollection = new ProjectCollection())
             {
                 // Arrange
-                var toolsetV14 = new Toolset(
+                var toolsetV14 = new MsBuildToolsetEx(new Toolset(
                     "14.0", "v14path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetV12 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetV12 = new MsBuildToolsetEx(new Toolset(
                     "12.0", "v12path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetFoo4 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetFoo4 = new MsBuildToolsetEx(new Toolset(
                     "Foo4.0", "foo4path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
+                    msbuildOverrideTasksPath: null));
 
-                var installedToolsets = new List<Toolset> {
+                var installedToolsets = new List<MsBuildToolsetEx> {
                     toolsetV14, toolsetV12, toolsetFoo4
                 };
 
@@ -267,20 +267,20 @@ namespace NuGet.CommandLine.Test
             using (var projectCollection = new ProjectCollection())
             {
                 // Arrange
-                var toolsetV14 = new Toolset(
+                var toolsetV14 = new MsBuildToolsetEx(new Toolset(
                     "14.0", "v14path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetV12 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetV12 = new MsBuildToolsetEx(new Toolset(
                     "12.0", "v12path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
-                var toolsetFoo4 = new Toolset(
+                    msbuildOverrideTasksPath: null));
+                var toolsetFoo4 = new MsBuildToolsetEx(new Toolset(
                     "Foo4.0", "foo4path",
                     projectCollection: projectCollection,
-                    msbuildOverrideTasksPath: null);
+                    msbuildOverrideTasksPath: null));
 
-                var installedToolsets = new List<Toolset> {
+                var installedToolsets = new List<MsBuildToolsetEx> {
                     toolsetV14, toolsetV12, toolsetFoo4
                 };
 
