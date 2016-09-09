@@ -1,18 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace NuGet.Commands
 {
     /// <summary>
     /// Internal ITaskItem abstraction
     /// </summary>
-    public class MSBuildItem
+    public class MSBuildItem : IMSBuildItem
     {
+        private readonly IDictionary<string, string> _metadata;
+
         public string Identity { get; }
 
-        public IDictionary<string, string> Metadata { get; }
+        public IReadOnlyList<string> Properties
+        {
+            get
+            {
+                return _metadata.Keys.ToList();
+            }
+        }
 
         public MSBuildItem(string identity, IDictionary<string, string> metadata)
         {
@@ -27,7 +34,21 @@ namespace NuGet.Commands
             }
 
             Identity = identity;
-            Metadata = metadata;
+            _metadata = metadata;
+        }
+
+        /// <summary>
+        /// Get property or null if empty.
+        /// </summary>
+        public string GetProperty(string key)
+        {
+            string val;
+            if (_metadata.TryGetValue(key, out val) && !string.IsNullOrEmpty(val))
+            {
+                return val;
+            }
+
+            return null;
         }
     }
 }

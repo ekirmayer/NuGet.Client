@@ -150,21 +150,5 @@ namespace NuGet.Commands
                 }
             }
         }
-
-        private static IEnumerable<MSBuildItem> GetItemByType(IEnumerable<MSBuildItem> items, string type)
-        {
-            return items.Where(e => e.Metadata["Type"].Equals(type, StringComparison.OrdinalIgnoreCase));
-        }
-
-        private static string GetProperty(MSBuildItem item, string key)
-        {
-            string val;
-            if (item.Metadata.TryGetValue(key, out val) && !string.IsNullOrEmpty(val))
-            {
-                return val;
-            }
-
-            return null;
-        }
     }
 }
