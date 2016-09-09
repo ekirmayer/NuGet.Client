@@ -24,6 +24,7 @@ namespace NuGet.Commands.Test
                 var items = new List<IDictionary<string, string>>();
                 items.Add(new Dictionary<string, string>()
                 {
+                    { "Type", "ProjectSpec" },
                     { "ProjectJsonPath", projectJsonPath },
                     { "ProjectName", "a" },
                     { "OutputType", "uap" },
@@ -73,7 +74,7 @@ namespace NuGet.Commands.Test
                 var items = new List<IDictionary<string, string>>();
                 items.Add(new Dictionary<string, string>()
                 {
-                    { "ProjectName", "a" },
+                    { "Type", "ProjectSpec" },
                     { "ProjectUniqueName", "482C20DE-DFF9-4BD0-B90A-BD3201AA351A" },
                     { "ProjectPath", projectPath },
                     { "TargetFrameworks", "net462" },
