@@ -142,7 +142,7 @@ namespace NuGet.ProjectModel
 
             if (rawMSBuildMetadata.Count > 0)
             {
-                SetValue(json, JsonPackageSpecReader.MSBuild, rawMSBuildMetadata);
+                SetValue(json, JsonPackageSpecReader.RestoreOptions, rawMSBuildMetadata);
             }
         }
 

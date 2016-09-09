@@ -287,13 +287,13 @@ namespace NuGet.Commands.Test
 
             // Create two net45 projects
             var spec1 = new PackageSpec(frameworks1);
-            spec1.MSBuildMetadata = new ProjectMSBuildMetadata();
+            spec1.MSBuildMetadata = new ProjectRestoreMetadata();
             spec1.MSBuildMetadata.ProjectUniqueName = "project1";
             spec1.MSBuildMetadata.ProjectName = "project1";
             spec1.MSBuildMetadata.OutputType = RestoreOutputType.NETCore;
 
             var spec2 = new PackageSpec(frameworks2);
-            spec2.MSBuildMetadata = new ProjectMSBuildMetadata();
+            spec2.MSBuildMetadata = new ProjectRestoreMetadata();
             spec2.MSBuildMetadata.ProjectUniqueName = "project2";
             spec2.MSBuildMetadata.ProjectName = "project2";
             spec2.MSBuildMetadata.OutputType = RestoreOutputType.NETCore;
@@ -344,7 +344,7 @@ namespace NuGet.Commands.Test
                     }
                 });
 
-                spec1.MSBuildMetadata.ProjectReferences.Add(new ProjectMSBuildReference()
+                spec1.MSBuildMetadata.ProjectReferences.Add(new ProjectRestoreReference()
                 {
                     ProjectPath = projPath2,
                     ProjectUniqueName = "project2"

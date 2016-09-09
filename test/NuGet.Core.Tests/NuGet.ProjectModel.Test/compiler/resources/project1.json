@@ -24,7 +24,7 @@
       "imports": "portable-net45+win8"
     }
   },
-  "msbuild": {
+  "restore": {
     "projectUniqueName": "A55205E7-4D08-4672-8011-0925467CC45F",
     "projectName": "x",
     "projectPath": "c:\\x\\x.csproj",

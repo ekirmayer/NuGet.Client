@@ -3,7 +3,7 @@ using NuGet.Configuration;
 
 namespace NuGet.ProjectModel
 {
-    public class ProjectMSBuildMetadata
+    public class ProjectRestoreMetadata
     {
         /// <summary>
         /// Restore behavior type.
@@ -53,6 +53,6 @@ namespace NuGet.ProjectModel
         /// <summary>
         /// Project reference metadata. This will be added to the non-msbuild dependency reference in the package spec.
         /// </summary>
-        public IList<ProjectMSBuildReference> ProjectReferences { get; set; } = new List<ProjectMSBuildReference>();
+        public IList<ProjectRestoreReference> ProjectReferences { get; set; } = new List<ProjectRestoreReference>();
     }
 }

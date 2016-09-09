@@ -92,7 +92,7 @@ namespace NuGet.ProjectModel.Test
         public void DependencyGraphSpec_VerifyMSBuildMetadataObject()
         {
             // Arrange && Act
-            var msbuildMetadata = new ProjectMSBuildMetadata();
+            var msbuildMetadata = new ProjectRestoreMetadata();
 
             msbuildMetadata.ProjectUniqueName = "A55205E7-4D08-4672-8011-0925467CC45F";
             msbuildMetadata.ProjectPath = "c:\\x\\x.csproj";
@@ -101,13 +101,13 @@ namespace NuGet.ProjectModel.Test
             msbuildMetadata.OutputType = RestoreOutputType.NETCore;
             msbuildMetadata.PackagesPath = "c:\\packages";
             msbuildMetadata.Sources = new[] { new PackageSource("https://api.nuget.org/v3/index.json") };
-            msbuildMetadata.ProjectReferences.Add(new ProjectMSBuildReference()
+            msbuildMetadata.ProjectReferences.Add(new ProjectRestoreReference()
             {
                 ProjectUniqueName = "44B29B8D-8413-42D2-8DF4-72225659619B",
                 ProjectPath = "c:\\a\\a.csproj"
             });
 
-            msbuildMetadata.ProjectReferences.Add(new ProjectMSBuildReference()
+            msbuildMetadata.ProjectReferences.Add(new ProjectRestoreReference()
             {
                 ProjectUniqueName = "78A6AD3F-9FA5-47F6-A54E-84B46A48CB2F",
                 ProjectPath = "c:\\b\\b.csproj"
@@ -140,7 +140,7 @@ namespace NuGet.ProjectModel.Test
             });
 
             var spec = new PackageSpec(frameworks);
-            var msbuildMetadata = new ProjectMSBuildMetadata();
+            var msbuildMetadata = new ProjectRestoreMetadata();
             spec.MSBuildMetadata = msbuildMetadata;
 
             msbuildMetadata.ProjectUniqueName = "A55205E7-4D08-4672-8011-0925467CC45F";
@@ -150,13 +150,13 @@ namespace NuGet.ProjectModel.Test
             msbuildMetadata.OutputType = RestoreOutputType.NETCore;
             msbuildMetadata.PackagesPath = "c:\\packages";
             msbuildMetadata.Sources = new[] { new PackageSource("https://api.nuget.org/v3/index.json") };
-            msbuildMetadata.ProjectReferences.Add(new ProjectMSBuildReference()
+            msbuildMetadata.ProjectReferences.Add(new ProjectRestoreReference()
             {
                 ProjectUniqueName = "44B29B8D-8413-42D2-8DF4-72225659619B",
                 ProjectPath = "c:\\a\\a.csproj"
             });
 
-            msbuildMetadata.ProjectReferences.Add(new ProjectMSBuildReference()
+            msbuildMetadata.ProjectReferences.Add(new ProjectRestoreReference()
             {
                 ProjectUniqueName = "78A6AD3F-9FA5-47F6-A54E-84B46A48CB2F",
                 ProjectPath = "c:\\b\\b.csproj"

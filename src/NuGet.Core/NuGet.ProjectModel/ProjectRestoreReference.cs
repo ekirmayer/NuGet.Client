@@ -1,6 +1,6 @@
 ﻿namespace NuGet.ProjectModel
 {
-    public class ProjectMSBuildReference
+    public class ProjectRestoreReference
     {
         /// <summary>
         /// Project unique name.

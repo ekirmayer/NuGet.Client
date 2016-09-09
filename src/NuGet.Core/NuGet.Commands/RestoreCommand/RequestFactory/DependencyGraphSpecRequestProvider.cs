@@ -60,7 +60,7 @@ namespace NuGet.Commands
 
         private static ExternalProjectReference GetExternalProject(PackageSpec rootProject)
         {
-            var projectReferences = rootProject.MSBuildMetadata?.ProjectReferences ?? new List<ProjectMSBuildReference>();
+            var projectReferences = rootProject.MSBuildMetadata?.ProjectReferences ?? new List<ProjectRestoreReference>();
 
             return new ExternalProjectReference(
                 rootProject.MSBuildMetadata.ProjectUniqueName,

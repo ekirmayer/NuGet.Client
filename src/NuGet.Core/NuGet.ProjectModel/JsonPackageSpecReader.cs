@@ -20,7 +20,7 @@ namespace NuGet.ProjectModel
 {
     public class JsonPackageSpecReader
     {
-        public static readonly string MSBuild = "msbuild";
+        public static readonly string RestoreOptions = "restore";
         public static readonly string PackOptions = "packOptions";
         public static readonly string PackageType = "packageType";
         public static readonly string Files = "files";
@@ -209,15 +209,15 @@ namespace NuGet.ProjectModel
             return new NuGetVersion(version);
         }
 
-        private static ProjectMSBuildMetadata GetMSBuildMetadata(PackageSpec packageSpec, JObject rawPackageSpec)
+        private static ProjectRestoreMetadata GetMSBuildMetadata(PackageSpec packageSpec, JObject rawPackageSpec)
         {
-            var rawMSBuildMetadata = rawPackageSpec.Value<JToken>(MSBuild) as JObject;
+            var rawMSBuildMetadata = rawPackageSpec.Value<JToken>(RestoreOptions) as JObject;
             if (rawMSBuildMetadata == null)
             {
                 return null;
             }
 
-            var msbuildMetadata = new ProjectMSBuildMetadata();
+            var msbuildMetadata = new ProjectRestoreMetadata();
 
             msbuildMetadata.ProjectUniqueName = rawMSBuildMetadata.GetValue<string>("projectUniqueName");
             msbuildMetadata.OutputPath = rawMSBuildMetadata.GetValue<string>("outputPath");
@@ -252,7 +252,7 @@ namespace NuGet.ProjectModel
             {
                 foreach (var prop in projectsObj.Properties())
                 {
-                    msbuildMetadata.ProjectReferences.Add(new ProjectMSBuildReference()
+                    msbuildMetadata.ProjectReferences.Add(new ProjectRestoreReference()
                     {
                         ProjectUniqueName = prop.Name,
                         ProjectPath = prop.Value.GetValue<string>("projectPath")
