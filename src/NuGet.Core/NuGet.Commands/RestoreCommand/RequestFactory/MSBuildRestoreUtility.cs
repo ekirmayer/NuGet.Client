@@ -105,11 +105,11 @@ namespace NuGet.Commands
             foreach (var item in GetItemByType(items, "ProjectReference"))
             {
                 var dependency = new LibraryDependency();
-                var projectUniqueName = item.GetProperty("ProjectUniqueName");
+                var projectReferenceUniqueName = item.GetProperty("ProjectReferenceUniqueName");
                 var projectPath = item.GetProperty("ProjectPath");
 
                 dependency.LibraryRange = new LibraryRange(
-                    name: projectUniqueName,
+                    name: projectReferenceUniqueName,
                     versionRange: VersionRange.All,
                     typeConstraint: (LibraryDependencyTarget.Project | LibraryDependencyTarget.ExternalProject));
 
@@ -136,7 +136,7 @@ namespace NuGet.Commands
                 var msbuildDependency = new ProjectRestoreReference()
                 {
                     ProjectPath = projectPath,
-                    ProjectUniqueName = projectUniqueName,
+                    ProjectUniqueName = projectReferenceUniqueName,
                 };
 
                 flatReferences.Add(msbuildDependency);
