@@ -444,4 +444,42 @@
   <data name="LocalsCommand_LocalsPartiallyCleared" xml:space="preserve">
     <value>Local resources partially cleared.</value>
   </data>
+  <data name="InvalidRestoreInput" xml:space="preserve">
+    <value>Invalid restore input. {0}</value>
+    <comment>0 is an error message specific to the validation failure.</comment>
+  </data>
+  <data name="InvalidRestoreInputWithFiles" xml:space="preserve">
+    <value>Invalid restore input. {0} Input files: {1}.</value>
+    <comment>0 is an error message specific to the validation failure. 1 is a list of file paths.</comment>
+  </data>
+  <data name="MissingRequiredProperty" xml:space="preserve">
+    <value>Missing required property '{0}'.</value>
+  </data>
+  <data name="MissingRequiredPropertyForProjectType" xml:space="preserve">
+    <value>Missing required property '{0}' for project type '{1}'.</value>
+  </data>
+  <data name="PropertyNotAllowed" xml:space="preserve">
+    <value>Invalid input combination. Property '{0}' is not allowed.</value>
+  </data>
+  <data name="PropertyNotAllowedForProjectType" xml:space="preserve">
+    <value>Invalid input combination. Property '{0}' is not allowed for project type '{1}'.</value>
+  </data>
+  <data name="SpecValidationDuplicateFrameworks" xml:space="preserve">
+    <value>Duplicate frameworks found: '{0}'.</value>
+  </data>
+  <data name="SpecValidationMissingDependency" xml:space="preserve">
+    <value>Missing dependency on '{0}'.</value>
+  </data>
+  <data name="SpecValidationMissingProject" xml:space="preserve">
+    <value>Missing project '{0}'.</value>
+  </data>
+  <data name="SpecValidationNoFrameworks" xml:space="preserve">
+    <value>No target frameworks specified.</value>
+  </data>
+  <data name="SpecValidationUAPSingleFramework" xml:space="preserve">
+    <value>UAP projects must contain exactly one target framework.</value>
+  </data>
+  <data name="SpecValidationZeroRestoreRequests" xml:space="preserve">
+    <value>Restore request does not contain any projects to restore.</value>
+  </data>
 </root>
