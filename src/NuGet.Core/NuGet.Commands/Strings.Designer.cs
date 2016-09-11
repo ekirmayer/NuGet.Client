@@ -942,6 +942,15 @@ namespace NuGet.Commands {
         }
         
         /// <summary>
+        ///    Looks up a localized string similar to Invalid target framework &apos;{0}&apos;..
+        /// </summary>
+        public static string SpecValidationInvalidFramework {
+            get {
+                return ResourceManager.GetString("SpecValidationInvalidFramework", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///    Looks up a localized string similar to Missing dependency on &apos;{0}&apos;..
         /// </summary>
         public static string SpecValidationMissingDependency {

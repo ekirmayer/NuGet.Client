@@ -470,6 +470,9 @@
   <data name="SpecValidationDuplicateFrameworks" xml:space="preserve">
     <value>Duplicate frameworks found: '{0}'.</value>
   </data>
+  <data name="SpecValidationInvalidFramework" xml:space="preserve">
+    <value>Invalid target framework '{0}'.</value>
+  </data>
   <data name="SpecValidationMissingDependency" xml:space="preserve">
     <value>Missing dependency on '{0}'.</value>
   </data>

@@ -9,6 +9,9 @@ namespace NuGet.Commands
 {
     public static class SpecValidationUtility
     {
+        /// <summary>
+        /// Validate a dg file. This will throw a RestoreSpecException if there are errors.
+        /// </summary>
         public static void ValidateDependencySpec(DependencyGraphSpec spec)
         {
             if (spec == null)
@@ -16,33 +19,44 @@ namespace NuGet.Commands
                 throw new ArgumentNullException(nameof(spec));
             }
 
-            // Verify projects
-            foreach (var projectSpec in spec.Projects)
+            try
             {
-                ValidateProjectSpec(projectSpec);
+                // Verify projects
+                foreach (var projectSpec in spec.Projects)
+                {
+                    ValidateProjectSpec(projectSpec);
+                }
+
+                var restoreSet = new HashSet<string>(spec.Restore, StringComparer.Ordinal);
+                var projectSet = new HashSet<string>(
+                    spec.Projects.Select(p => p.RestoreMetadata?.ProjectUniqueName)
+                    .Where(s => !string.IsNullOrEmpty(s)),
+                    StringComparer.Ordinal);
+
+                // Verify restore does not reference a project that does not exist
+                foreach (var missing in restoreSet.Except(projectSet))
+                {
+                    var message = string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.SpecValidationMissingProject,
+                        missing);
+
+                    throw RestoreSpecException.Create(message, Enumerable.Empty<string>());
+                }
+
+                // Verify restore contains at least one project
+                if (restoreSet.Count < 1)
+                {
+                    throw RestoreSpecException.Create(Strings.SpecValidationZeroRestoreRequests, Enumerable.Empty<string>());
+                }
             }
-
-            var restoreSet = new HashSet<string>(spec.Restore, StringComparer.Ordinal);
-            var projectSet = new HashSet<string>(
-                spec.Projects.Select(p => p.RestoreMetadata?.ProjectUniqueName)
-                .Where(s => !string.IsNullOrEmpty(s)),
-                StringComparer.Ordinal);
-
-            // Verify restore does not reference a project that does not exist
-            foreach (var missing in restoreSet.Except(projectSet))
+            catch (Exception ex) when (!(ex is RestoreSpecException))
             {
-                var message = string.Format(
-                    CultureInfo.CurrentCulture,
-                    Strings.SpecValidationMissingProject,
-                    missing);
-
-                throw RestoreSpecException.Create(message, Enumerable.Empty<string>());
-            }
-
-            // Verify restore contains at least one project
-            if (restoreSet.Count < 1)
-            {
-                throw RestoreSpecException.Create(Strings.SpecValidationZeroRestoreRequests, Enumerable.Empty<string>());
+                // Catch and wrap any unexpected exceptions
+                throw RestoreSpecException.Create(
+                    ex.Message,
+                    Enumerable.Empty<string>(),
+                    ex);
             }
         }
 
@@ -72,6 +86,9 @@ namespace NuGet.Commands
 
             var outputType = spec.RestoreMetadata?.OutputType;
 
+            // Verify project metadata
+            ValidateProjectMetadata(spec, files);
+
             // Verify frameworks
             ValidateFrameworks(spec, files);
 
@@ -84,9 +101,11 @@ namespace NuGet.Commands
                 case RestoreOutputType.NETCore:
                     ValidateProjectSpecNetCore(spec, files);
                     break;
+
                 case RestoreOutputType.UAP:
                     ValidateProjectSpecUAP(spec, files);
                     break;
+
                 default:
                     ValidateProjectSpecOther(spec, files);
                     break;
@@ -102,7 +121,7 @@ namespace NuGet.Commands
             {
                 var message = string.Format(
                     CultureInfo.CurrentCulture,
-                    Strings.Error_InvalidTargetFramework,
+                    Strings.SpecValidationInvalidFramework,
                     framework.GetShortFolderName());
 
                 throw RestoreSpecException.Create(message, files);
@@ -134,8 +153,8 @@ namespace NuGet.Commands
                 var message = string.Format(
                     CultureInfo.CurrentCulture,
                     Strings.PropertyNotAllowedForProjectType,
-                    RestoreOutputType.NETCore.ToString(),
-                    nameof(spec.RestoreMetadata.ProjectJsonPath));
+                    nameof(spec.RestoreMetadata.ProjectJsonPath),
+                    RestoreOutputType.NETCore.ToString());
 
                 throw RestoreSpecException.Create(message, files);
             }
@@ -146,8 +165,8 @@ namespace NuGet.Commands
                 var message = string.Format(
                     CultureInfo.CurrentCulture,
                     Strings.MissingRequiredPropertyForProjectType,
-                    RestoreOutputType.NETCore.ToString(),
-                    nameof(spec.RestoreMetadata.OutputPath));
+                    nameof(spec.RestoreMetadata.OutputPath),
+                    RestoreOutputType.NETCore.ToString());
 
                 throw RestoreSpecException.Create(message, files);
             }
@@ -168,8 +187,8 @@ namespace NuGet.Commands
                 var message = string.Format(
                     CultureInfo.CurrentCulture,
                     Strings.MissingRequiredPropertyForProjectType,
-                    RestoreOutputType.UAP.ToString(),
-                    nameof(spec.RestoreMetadata.ProjectJsonPath));
+                    nameof(spec.RestoreMetadata.ProjectJsonPath),
+                    RestoreOutputType.UAP.ToString());
 
                 throw RestoreSpecException.Create(message, files);
             }
@@ -180,8 +199,8 @@ namespace NuGet.Commands
                 var message = string.Format(
                     CultureInfo.CurrentCulture,
                     Strings.PropertyNotAllowedForProjectType,
-                    RestoreOutputType.UAP.ToString(),
-                    nameof(spec.RestoreMetadata.OutputPath));
+                    nameof(spec.RestoreMetadata.OutputPath),
+                    RestoreOutputType.UAP.ToString());
 
                 throw RestoreSpecException.Create(message, files);
             }
