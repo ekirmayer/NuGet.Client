@@ -28,7 +28,6 @@ namespace NuGet.CommandLine
             ".csproj",
             ".vbproj",
             ".fsproj",
-            ".xproj",
             ".nuproj"
         };
 

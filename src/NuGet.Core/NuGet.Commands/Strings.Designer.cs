@@ -204,6 +204,15 @@ namespace NuGet.Commands {
         }
         
         /// <summary>
+        ///    Looks up a localized string similar to Invalid input &apos;{0}&apos;. XProj support has been removed. Support for XProj and standalone project.json files has been removed, to continue working with legacy projects use NuGet 3.5.x from https://nuget.org/downloads.
+        /// </summary>
+        public static string Error_XPROJNotAllowed {
+            get {
+                return ResourceManager.GetString("Error_XPROJNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///    Looks up a localized string similar to Failed to build &apos;{0}&apos;..
         /// </summary>
         public static string FailedToBuildProject {

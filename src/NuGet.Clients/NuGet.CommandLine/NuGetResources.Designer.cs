@@ -3076,6 +3076,15 @@ namespace NuGet.CommandLine {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid input &apos;{0}&apos;. Provide the path of an msbuild solution file instead. Support for XProj and standalone project.json files has been removed, to continue working with legacy projects use NuGet 3.5.x from https://nuget.org/downloads.
+        /// </summary>
+        public static string Error_ProjectJsonNotAllowed {
+            get {
+                return ResourceManager.GetString("Error_ProjectJsonNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Property Settings is null..
         /// </summary>
         public static string Error_SettingsIsNull {

@@ -331,6 +331,17 @@ namespace NuGet.Commands
 
                 throw RestoreSpecException.Create(message, files);
             }
+
+            // block xproj
+            if (spec.RestoreMetadata.ProjectPath.EndsWith(".xproj", StringComparison.OrdinalIgnoreCase))
+            {
+                var message = string.Format(
+                    CultureInfo.CurrentCulture,
+                    Strings.Error_XPROJNotAllowed,
+                    nameof(spec.RestoreMetadata.ProjectPath));
+
+                throw RestoreSpecException.Create(message, files);
+            }
         }
 
         private static IEnumerable<LibraryDependency> GetAllDependencies(PackageSpec spec)

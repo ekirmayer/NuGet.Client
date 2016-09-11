@@ -498,6 +498,11 @@ namespace NuGet.CommandLine
             {
                 ProcessSolutionFile(projectFilePath, packageRestoreInputs);
             }
+            else if (ProjectJsonPathUtilities.IsProjectConfig(projectFileName))
+            {
+                // project.json is no longer allowed
+                throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, LocalizedResourceManager.GetString("Error_ProjectJsonNotAllowed"), projectFileName));
+            }
             else
             {
                 // Not a file we know about. Try to be helpful without response.

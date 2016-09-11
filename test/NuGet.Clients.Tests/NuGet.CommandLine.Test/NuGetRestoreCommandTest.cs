@@ -1130,16 +1130,20 @@ EndProject");
 
                 Util.CreateTestPackage("packageA", "1.1.0", repositoryPath);
                 Util.CreateTestPackage("packageB", "2.2.0", repositoryPath);
-                Util.CreateFile(workingPath, "project.json",
-@"{
-  'dependencies': {
-    'packageA': '1.1.0',
-    'packageB': '2.2.0'
-  },
-  'frameworks': {
-                'netcore50': { }
-            }
-}");
+
+
+                var projectJson = @"{
+                    'dependencies': {
+                    'packageA': '1.1.0',
+                    'packageB': '2.2.0'
+                    },
+                    'frameworks': {
+                                'netcore50': { }
+                            }
+                }";
+
+                var projectFile = Util.CreateUAPProject(workingPath, projectJson);
+
                 var nugetConfigDir = Path.Combine(workingPath, ".nuget");
 
 
@@ -1157,7 +1161,7 @@ EndProject");
                     repositoryPath,
                     "-solutionDir",
                     workingPath,
-                    "project.json",
+                    projectFile,
                     "-verbosity detailed"
                 };
 
