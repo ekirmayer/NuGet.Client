@@ -1,15 +1,11 @@
-﻿using NuGet.Configuration;
-using NuGet.Frameworks;
-using NuGet.LibraryModel;
-using NuGet.ProjectModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using NuGet.Versioning;
-using Newtonsoft.Json.Linq;
-using System.Diagnostics;
+using NuGet.Configuration;
+using NuGet.ProjectModel;
 
 namespace NuGet.Commands
 {
@@ -21,13 +17,23 @@ namespace NuGet.Commands
         private readonly DependencyGraphSpec _dgFile;
         private readonly RestoreCommandProvidersCache _providerCache;
         private readonly Dictionary<string, PackageSpec> _projectJsonCache = new Dictionary<string, PackageSpec>(StringComparer.Ordinal);
+        private readonly ISettings _providerSettingsOverride;
 
         public DependencyGraphSpecRequestProvider(
             RestoreCommandProvidersCache providerCache,
             DependencyGraphSpec dgFile)
+            : this(providerCache, dgFile, settingsOverride: null)
+        {
+        }
+
+        public DependencyGraphSpecRequestProvider(
+            RestoreCommandProvidersCache providerCache,
+            DependencyGraphSpec dgFile,
+            ISettings settingsOverride)
         {
             _dgFile = dgFile;
             _providerCache = providerCache;
+            _providerSettingsOverride = settingsOverride;
         }
 
         public Task<IReadOnlyList<RestoreSummaryRequest>> CreateRequests(RestoreArgs restoreContext)
@@ -67,7 +73,7 @@ namespace NuGet.Commands
                 var rootProject = externalClosure.Single(p =>
                     StringComparer.Ordinal.Equals(projectNameToRestore, p.ProjectName));
 
-                var request = Create(rootProject, externalClosure, restoreContext, settingsOverride: null);
+                var request = Create(rootProject, externalClosure, restoreContext, settingsOverride: _providerSettingsOverride);
 
                 requests.Add(request);
             }

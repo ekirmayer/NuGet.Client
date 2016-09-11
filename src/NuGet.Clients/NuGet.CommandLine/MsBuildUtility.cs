@@ -12,6 +12,7 @@ using System.Text;
 using Microsoft.Build.Evaluation;
 using NuGet.Commands;
 using NuGet.Common;
+using NuGet.ProjectModel;
 
 namespace NuGet.CommandLine
 {
@@ -73,7 +74,7 @@ namespace NuGet.CommandLine
         /// <summary>
         /// Returns the closure of project references for projects specified in <paramref name="projectPaths"/>.
         /// </summary>
-        public static MSBuildProjectReferenceProvider GetProjectReferences(
+        public static DependencyGraphSpec GetProjectReferences(
             string msbuildDirectory,
             string[] projectPaths,
             int timeOut)
@@ -158,14 +159,12 @@ namespace NuGet.CommandLine
                     }
                 }
 
-                var lines = new string[0];
-
                 if (File.Exists(resultsPath))
                 {
-                    lines = File.ReadAllLines(resultsPath);
+                    return DependencyGraphSpec.Load(resultsPath);
                 }
 
-                return new MSBuildProjectReferenceProvider(lines);
+                return new DependencyGraphSpec();
             }
         }
 

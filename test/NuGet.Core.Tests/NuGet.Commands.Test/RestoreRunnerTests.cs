@@ -250,7 +250,7 @@ namespace NuGet.Commands.Test
                     CachingSourceProvider = new CachingSourceProvider(new TestPackageSourceProvider(sources)),
                     RequestProviders = new List<IRestoreRequestProvider>()
                     {
-                        new MSBuildP2PRestoreRequestProvider(providerCache),
+                        new DependencyGraphFileRequestProvider(providerCache),
                         new ProjectJsonRestoreRequestProvider(providerCache)
                     }
                 };
@@ -468,7 +468,7 @@ namespace NuGet.Commands.Test
                     CachingSourceProvider = new CachingSourceProvider(new TestPackageSourceProvider(sources)),
                     RequestProviders = new List<IRestoreRequestProvider>()
                     {
-                        new MSBuildP2PRestoreRequestProvider(providerCache),
+                        new DependencyGraphFileRequestProvider(providerCache),
                         new ProjectJsonRestoreRequestProvider(providerCache)
                     }
                 };

@@ -13,6 +13,7 @@ using NuGet.Common;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
+using NuGet.ProjectModel;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 
@@ -132,12 +133,12 @@ namespace NuGet.CommandLine
 
                     // Providers
                     // Use the settings loaded above in ReadSettings(restoreInputs)
-                    restoreContext.RequestProviders.Add(new MSBuildCachedRequestProvider(
+                    restoreContext.PreLoadedRequestProviders.Add(new DependencyGraphSpecRequestProvider(
                         providerCache,
                         restoreInputs.ProjectReferenceLookup,
                         Settings));
 
-                    restoreContext.RequestProviders.Add(new MSBuildP2PRestoreRequestProvider(providerCache));
+                    restoreContext.RequestProviders.Add(new DependencyGraphFileRequestProvider(providerCache));
                     restoreContext.RequestProviders.Add(new ProjectJsonRestoreRequestProvider(providerCache));
 
                     // Run restore
@@ -734,7 +735,7 @@ namespace NuGet.CommandLine
         {
             public PackageRestoreInputs()
             {
-                ProjectReferenceLookup = new MSBuildProjectReferenceProvider(Enumerable.Empty<string>());
+                ProjectReferenceLookup = new DependencyGraphSpec();
             }
 
             public bool RestoringWithSolutionFile => !string.IsNullOrEmpty(DirectoryOfSolutionFile);
@@ -743,7 +744,7 @@ namespace NuGet.CommandLine
 
             public List<string> PackagesConfigFiles { get; } = new List<string>();
 
-            public MSBuildProjectReferenceProvider ProjectReferenceLookup { get; set; }
+            public DependencyGraphSpec ProjectReferenceLookup { get; set; }
 
             public RestoreArgs RestoreV3Context { get; set; } = new RestoreArgs();
         }
