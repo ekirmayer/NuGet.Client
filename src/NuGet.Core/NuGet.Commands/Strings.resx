@@ -458,6 +458,9 @@
   <data name="MissingRequiredPropertyForProjectType" xml:space="preserve">
     <value>Missing required property '{0}' for project type '{1}'.</value>
   </data>
+  <data name="PersistDGFile" xml:space="preserve">
+    <value>Persisting restore input to '{0}'.</value>
+  </data>
   <data name="PropertyNotAllowed" xml:space="preserve">
     <value>Invalid input combination. Property '{0}' is not allowed.</value>
   </data>

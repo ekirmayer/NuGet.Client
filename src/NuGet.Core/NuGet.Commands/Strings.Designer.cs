@@ -897,6 +897,15 @@ namespace NuGet.Commands {
         }
         
         /// <summary>
+        ///    Looks up a localized string similar to Persisting restore input to &apos;{0}&apos;..
+        /// </summary>
+        public static string PersistDGFile {
+            get {
+                return ResourceManager.GetString("PersistDGFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///    Looks up a localized string similar to Invalid input combination. Property &apos;{0}&apos; is not allowed..
         /// </summary>
         public static string PropertyNotAllowed {

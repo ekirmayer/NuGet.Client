@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -327,6 +328,50 @@ namespace NuGet.Commands
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Write the dg file to a temp location if NUGET_PERSIST_DG.
+        /// </summary>
+        /// <remarks>This is a noop if NUGET_PERSIST_DG is not set to true.</remarks>
+        public static void PersistDGFileIfDebugging(DependencyGraphSpec spec, ILogger log)
+        {
+            if (_isPersistDGSet.Value)
+            {
+                var path = Path.Combine(
+                    NuGetEnvironment.GetFolderPath(NuGetFolderPath.Temp),
+                    "nuget-dg",
+                    $"{Guid.NewGuid()}.dg");
+
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+                log.LogMinimal(
+                    string.Format(
+                        CultureInfo.CurrentCulture,
+                        Strings.PersistDGFile,
+                        path));
+
+                spec.Save(path);
+            }
+        }
+
+        private static readonly Lazy<bool> _isPersistDGSet = new Lazy<bool>(() => IsPersistDGSet());
+
+        /// <summary>
+        /// True if NUGET_PERSIST_DG is set to true.
+        /// </summary>
+        private static bool IsPersistDGSet()
+        {
+            var settingValue = Environment.GetEnvironmentVariable("NUGET_PERSIST_DG");
+
+            bool val;
+            if (!string.IsNullOrEmpty(settingValue)
+                && Boolean.TryParse(settingValue, out val))
+            {
+                return val;
+            }
+
+            return false;
         }
     }
 }
