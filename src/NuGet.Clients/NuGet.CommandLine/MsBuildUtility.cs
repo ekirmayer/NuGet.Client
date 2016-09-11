@@ -20,11 +20,8 @@ namespace NuGet.CommandLine
     {
         internal const int MsBuildWaitTime = 2 * 60 * 1000; // 2 minutes in milliseconds
 
-        private const string GetProjectReferencesTarget =
-            "NuGet.CommandLine.GetProjectsReferencingProjectJsonFiles.targets";
-
-        private const string GetProjectReferencesEntryPointTarget =
-            "NuGet.CommandLine.GetProjectsReferencingProjectJsonFilesEntryPoint.targets";
+        private const string NuGetTargets =
+            "NuGet.targets";
 
         private static readonly HashSet<string> _msbuildExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -93,11 +90,9 @@ namespace NuGet.CommandLine
             var nugetExePath = Assembly.GetEntryAssembly().Location;
 
             using (var entryPointTargetPath = new TempFile(".targets"))
-            using (var customAfterBuildTargetPath = new TempFile(".targets"))
             using (var resultsPath = new TempFile(".result"))
             {
-                ExtractResource(GetProjectReferencesEntryPointTarget, entryPointTargetPath);
-                ExtractResource(GetProjectReferencesTarget, customAfterBuildTargetPath);
+                ExtractResource(NuGetTargets, entryPointTargetPath);
 
                 var argumentBuilder = new StringBuilder(
                     "/t:NuGet_GetProjectsReferencingProjectJson " +
@@ -106,9 +101,6 @@ namespace NuGet.CommandLine
 
                 argumentBuilder.Append(" /p:NuGetTasksAssemblyPath=");
                 AppendQuoted(argumentBuilder, nugetExePath);
-
-                argumentBuilder.Append(" /p:NuGetCustomAfterBuildTargetPath=");
-                AppendQuoted(argumentBuilder, customAfterBuildTargetPath);
 
                 argumentBuilder.Append(" /p:ResultsFile=");
                 AppendQuoted(argumentBuilder, resultsPath);
