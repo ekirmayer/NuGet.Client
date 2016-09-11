@@ -165,6 +165,7 @@ namespace NuGet.Commands
                 result.RestoreMetadata.OutputType = restoreType;
                 result.RestoreMetadata.ProjectPath = specItem.GetProperty("ProjectPath");
                 result.RestoreMetadata.ProjectUniqueName = specItem.GetProperty("ProjectUniqueName");
+                result.Name = specItem.GetProperty("ProjectName");
 
                 // Read project references for all
                 AddProjectReferences(result, items);
@@ -349,7 +350,6 @@ namespace NuGet.Commands
             spec.RestoreMetadata = new ProjectRestoreMetadata();
 
             spec.FilePath = specItem.GetProperty("ProjectPath");
-            spec.Name = specItem.GetProperty("ProjectName");
 
             if (string.IsNullOrEmpty(spec.Name) && !string.IsNullOrEmpty(spec.FilePath))
             {

@@ -189,23 +189,66 @@ namespace NuGet.ProjectModel
             foreach (var dependency in libraryDependencies)
             {
                 JObject dependencyObject = new JObject();
+                var expandedMode = false;
 
-                SetValue(dependencyObject, "include", dependency.IncludeType.ToString());
+                if (dependency.IncludeType != LibraryIncludeFlags.All)
+                {
+                    expandedMode = true;
+                    SetValue(dependencyObject, "include", dependency.IncludeType.ToString());
+                }
+
+                if (dependency.SuppressParent != LibraryIncludeFlagUtils.DefaultSuppressParent)
+                {
+                    expandedMode = true;
+                    SetValue(dependencyObject, "suppressParent", dependency.SuppressParent.ToString());
+                }
+
+                if (dependency.Type != LibraryDependencyType.Default)
+                {
+                    expandedMode = true;
+                    SetValue(dependencyObject, "type", dependency.Type.ToString());
+                }
+
+                if (dependency.LibraryRange.TypeConstraint != LibraryDependencyTarget.Reference
+                    && dependency.LibraryRange.TypeConstraint != (LibraryDependencyTarget.All & ~LibraryDependencyTarget.Reference))
+                {
+                    expandedMode = true;
+                    SetValue(dependencyObject, "target", dependency.LibraryRange.TypeConstraint.ToString());
+                }
+
+                var versionString = string.Empty;
+
                 if (!dependency.LibraryRange.VersionRange.Equals(new Versioning.VersionRange()))
                 {
-                    SetValue(dependencyObject, "version", dependency.LibraryRange.VersionRange.ToNormalizedString());
+                    versionString = dependency.LibraryRange.VersionRange.ToLegacyShortString();
                 }
-                SetValue(dependencyObject, "suppressParent", dependency.SuppressParent.ToString());
-                SetValue(dependencyObject, "type", dependency.Type.ToString());
+
+                if (expandedMode)
+                {
+                    SetValue(dependencyObject, "version", versionString);
+                }
 
                 if (dependency.LibraryRange.TypeConstraint != LibraryDependencyTarget.Reference)
                 {
-                    SetValue(dependencyObject, "target", dependency.LibraryRange.TypeConstraint.ToString());
-                    dependencies[dependency.Name] = dependencyObject;
+                    if (expandedMode)
+                    {
+                        dependencies[dependency.Name] = dependencyObject;
+                    }
+                    else
+                    {
+                        dependencies[dependency.Name] = versionString;
+                    }
                 }
                 else
                 {
-                    frameworkAssemblies[dependency.Name] = dependencyObject;
+                    if (expandedMode)
+                    {
+                        frameworkAssemblies[dependency.Name] = dependencyObject;
+                    }
+                    else
+                    {
+                        frameworkAssemblies[dependency.Name] = versionString;
+                    }
                 }
             }
 
@@ -226,7 +269,7 @@ namespace NuGet.ProjectModel
                 JArray imports = new JArray();
                 foreach (var import in frameworks)
                 {
-                    imports.Add(import.Profile);
+                    imports.Add(import.GetShortFolderName());
                 }
                 json["imports"] = imports;
             }

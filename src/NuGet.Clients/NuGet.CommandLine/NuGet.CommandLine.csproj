@@ -34,10 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="GetProjectsReferencingProjectJsonFiles.targets">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GetProjectsReferencingProjectJsonFilesEntryPoint.targets">
+    <EmbeddedResource Include="NuGet.targets">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

@@ -170,7 +170,7 @@ namespace NuGet.ProjectModel
                 var projectObj = new JObject();
                 JsonPackageSpecWriter.WritePackageSpec(project, projectObj);
 
-                restoreObj[project.RestoreMetadata.ProjectUniqueName] = projectObj;
+                projectsObj[project.RestoreMetadata.ProjectUniqueName] = projectObj;
             }
 
             return json;
