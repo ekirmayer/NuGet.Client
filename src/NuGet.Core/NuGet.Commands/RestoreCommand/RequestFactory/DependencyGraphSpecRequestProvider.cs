@@ -71,7 +71,7 @@ namespace NuGet.Commands
                 var externalClosure = new HashSet<ExternalProjectReference>(closure.Select(GetExternalProject));
 
                 var rootProject = externalClosure.Single(p =>
-                    StringComparer.Ordinal.Equals(projectNameToRestore, p.ProjectName));
+                    StringComparer.Ordinal.Equals(projectNameToRestore, p.UniqueName));
 
                 var request = Create(rootProject, externalClosure, restoreContext, settingsOverride: _providerSettingsOverride);
 

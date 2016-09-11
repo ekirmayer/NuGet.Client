@@ -21,7 +21,7 @@ namespace NuGet.CommandLine
         internal const int MsBuildWaitTime = 2 * 60 * 1000; // 2 minutes in milliseconds
 
         private const string NuGetTargets =
-            "NuGet.targets";
+            "NuGet.CommandLine.NuGet.targets";
 
         private static readonly HashSet<string> _msbuildExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -89,23 +89,33 @@ namespace NuGet.CommandLine
 
             var nugetExePath = Assembly.GetEntryAssembly().Location;
 
+#if DEBUG
+            // Use the non-ILMerged path for debug
+            var buildTasksPath = Path.Combine(Path.GetDirectoryName(nugetExePath), "NuGet.Build.Tasks.dll");
+
+            if (File.Exists(buildTasksPath))
+            {
+                nugetExePath = buildTasksPath;
+            }
+#endif
+
             using (var entryPointTargetPath = new TempFile(".targets"))
             using (var resultsPath = new TempFile(".result"))
             {
                 ExtractResource(NuGetTargets, entryPointTargetPath);
 
                 var argumentBuilder = new StringBuilder(
-                    "/t:NuGet_GetProjectsReferencingProjectJson " +
+                    "/t:GenerateRestoreGraphFile " +
                     "/nologo /nr:false /v:q " +
                     "/p:BuildProjectReferences=false");
 
-                argumentBuilder.Append(" /p:NuGetTasksAssemblyPath=");
+                argumentBuilder.Append(" /p:RestoreTaskAssemblyFile=");
                 AppendQuoted(argumentBuilder, nugetExePath);
 
-                argumentBuilder.Append(" /p:ResultsFile=");
+                argumentBuilder.Append(" /p:RestoreGraphOutputPath=");
                 AppendQuoted(argumentBuilder, resultsPath);
 
-                argumentBuilder.Append(" /p:NuGet_ProjectReferenceToResolve=\"");
+                argumentBuilder.Append(" /p:RestoreGraphProjectInput=\"");
                 for (var i = 0; i < projectPaths.Length; i++)
                 {
                     argumentBuilder.Append(projectPaths[i])
@@ -151,12 +161,19 @@ namespace NuGet.CommandLine
                     }
                 }
 
+                DependencyGraphSpec spec = null;
+
                 if (File.Exists(resultsPath))
                 {
-                    return DependencyGraphSpec.Load(resultsPath);
+                    spec = DependencyGraphSpec.Load(resultsPath);
+                    File.Delete(resultsPath);
+                }
+                else
+                {
+                    spec = new DependencyGraphSpec();
                 }
 
-                return new DependencyGraphSpec();
+                return spec;
             }
         }
 

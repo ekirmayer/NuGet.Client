@@ -117,6 +117,9 @@ namespace NuGet.CommandLine
                     restoreContext.Log = Console;
                     restoreContext.CachingSourceProvider = GetSourceRepositoryProvider();
 
+                    // HACK: remove other inputs
+                    restoreContext.Inputs.Clear();
+
                     var packageSaveMode = EffectivePackageSaveMode;
                     if (packageSaveMode != Packaging.PackageSaveMode.None)
                     {

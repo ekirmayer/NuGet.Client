@@ -58,5 +58,10 @@ namespace NuGet.Build.Tasks
 
             Item = item;
         }
+
+        public override string ToString()
+        {
+            return $"Type: {GetProperty("Type")} Project: {GetProperty("ProjectUniqueName")}";
+        }
     }
 }

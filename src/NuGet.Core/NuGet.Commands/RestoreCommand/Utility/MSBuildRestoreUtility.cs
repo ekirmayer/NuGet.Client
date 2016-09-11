@@ -194,7 +194,7 @@ namespace NuGet.Commands
                 dependency.LibraryRange = new LibraryRange(
                     name: projectReferenceUniqueName,
                     versionRange: VersionRange.All,
-                    typeConstraint: (LibraryDependencyTarget.Project | LibraryDependencyTarget.ExternalProject));
+                    typeConstraint: LibraryDependencyTarget.ExternalProject);
 
                 // TODO: include, suppressParent, exclude
                 dependency.IncludeType = LibraryIncludeFlags.All;
