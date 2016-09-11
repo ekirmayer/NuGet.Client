@@ -165,7 +165,13 @@ namespace NuGet.Commands
                 result.RestoreMetadata.OutputType = restoreType;
                 result.RestoreMetadata.ProjectPath = specItem.GetProperty("ProjectPath");
                 result.RestoreMetadata.ProjectUniqueName = specItem.GetProperty("ProjectUniqueName");
-                result.Name = specItem.GetProperty("ProjectName");
+
+                if (string.IsNullOrEmpty(result.Name))
+                {
+                    result.Name = result.RestoreMetadata.ProjectName
+                        ?? result.RestoreMetadata.ProjectUniqueName
+                        ?? Path.GetFileNameWithoutExtension(result.FilePath);
+                }
 
                 // Read project references for all
                 AddProjectReferences(result, items);
@@ -206,7 +212,7 @@ namespace NuGet.Commands
                     ProjectUniqueName = projectReferenceUniqueName,
                 };
 
-                AddMSBuildProjectReference(spec, msbuildDependency, dependency);
+                AddMSBuildProjectReference(spec, msbuildDependency, dependency, GetFrameworks(item, spec));
             }
 
             // Add project paths
@@ -348,15 +354,22 @@ namespace NuGet.Commands
 
             var spec = new PackageSpec(frameworkInfo);
             spec.RestoreMetadata = new ProjectRestoreMetadata();
-
             spec.FilePath = specItem.GetProperty("ProjectPath");
-
-            if (string.IsNullOrEmpty(spec.Name) && !string.IsNullOrEmpty(spec.FilePath))
-            {
-                spec.Name = Path.GetFileNameWithoutExtension(spec.FilePath);
-            }
+            spec.RestoreMetadata.ProjectName = specItem.GetProperty("ProjectName");
 
             return spec;
+        }
+
+        private static HashSet<NuGetFramework> GetFrameworks(IMSBuildItem item, PackageSpec spec)
+        {
+            var frameworks = GetFrameworks(item);
+
+            if (frameworks.Count == 0)
+            {
+                frameworks.UnionWith(spec.TargetFrameworks.Select(e => e.FrameworkName));
+            }
+
+            return frameworks;
         }
 
         private static HashSet<NuGetFramework> GetFrameworks(IMSBuildItem item)

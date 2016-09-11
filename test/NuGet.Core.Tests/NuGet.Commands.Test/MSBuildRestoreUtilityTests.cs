@@ -160,7 +160,7 @@ namespace NuGet.Commands.Test
                 // Assert
                 // Verify p2p reference
                 Assert.Equal("AA2C20DE-DFF9-4BD0-B90A-BD3201AA351A", dependencyLink.Name);
-                Assert.Equal((LibraryDependencyTarget.ExternalProject | LibraryDependencyTarget.Project), dependencyLink.LibraryRange.TypeConstraint);
+                Assert.Equal(LibraryDependencyTarget.ExternalProject, dependencyLink.LibraryRange.TypeConstraint);
                 Assert.Equal(VersionRange.All, dependencyLink.LibraryRange.VersionRange);
                 Assert.Equal(LibraryIncludeFlags.All, dependencyLink.IncludeType);
                 Assert.Equal(LibraryIncludeFlagUtils.DefaultSuppressParent, dependencyLink.SuppressParent);
@@ -308,7 +308,7 @@ namespace NuGet.Commands.Test
 
                 // Assert
                 Assert.Equal("AA2C20DE-DFF9-4BD0-B90A-BD3201AA351A", dependencyLink.Name);
-                Assert.Equal((LibraryDependencyTarget.ExternalProject | LibraryDependencyTarget.Project), dependencyLink.LibraryRange.TypeConstraint);
+                Assert.Equal(LibraryDependencyTarget.ExternalProject, dependencyLink.LibraryRange.TypeConstraint);
                 Assert.Equal(VersionRange.All, dependencyLink.LibraryRange.VersionRange);
                 Assert.Equal(LibraryIncludeFlags.All, dependencyLink.IncludeType);
                 Assert.Equal(LibraryIncludeFlagUtils.DefaultSuppressParent, dependencyLink.SuppressParent);
@@ -386,6 +386,7 @@ namespace NuGet.Commands.Test
                     { "ProjectUniqueName", "482C20DE-DFF9-4BD0-B90A-BD3201AA351A" },
                     { "ProjectPath", projectPath },
                     { "TargetFrameworks", "net462" },
+                    { "ProjectName", "a" },
                 });
 
                 // Act

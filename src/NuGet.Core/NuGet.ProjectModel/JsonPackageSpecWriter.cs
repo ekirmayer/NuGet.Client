@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using NuGet.Frameworks;
 using NuGet.LibraryModel;
 using NuGet.RuntimeModel;
+using NuGet.Versioning;
 
 namespace NuGet.ProjectModel
 {
@@ -216,12 +217,8 @@ namespace NuGet.ProjectModel
                     SetValue(dependencyObject, "target", dependency.LibraryRange.TypeConstraint.ToString());
                 }
 
-                var versionString = string.Empty;
-
-                if (!dependency.LibraryRange.VersionRange.Equals(new Versioning.VersionRange()))
-                {
-                    versionString = dependency.LibraryRange.VersionRange.ToLegacyShortString();
-                }
+                var versionString = dependency.LibraryRange.VersionRange?.ToLegacyShortString()
+                    ?? VersionRange.All.ToNormalizedString();
 
                 if (expandedMode && !string.IsNullOrEmpty(versionString))
                 {

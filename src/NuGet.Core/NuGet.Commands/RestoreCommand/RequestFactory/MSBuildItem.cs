@@ -50,5 +50,10 @@ namespace NuGet.Commands
 
             return null;
         }
+
+        public override string ToString()
+        {
+            return $"Type: {GetProperty("Type")} Project: {GetProperty("ProjectUniqueName")}";
+        }
     }
 }
