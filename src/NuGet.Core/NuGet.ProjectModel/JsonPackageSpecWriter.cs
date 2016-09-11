@@ -223,7 +223,7 @@ namespace NuGet.ProjectModel
                     versionString = dependency.LibraryRange.VersionRange.ToLegacyShortString();
                 }
 
-                if (expandedMode)
+                if (expandedMode && !string.IsNullOrEmpty(versionString))
                 {
                     SetValue(dependencyObject, "version", versionString);
                 }
