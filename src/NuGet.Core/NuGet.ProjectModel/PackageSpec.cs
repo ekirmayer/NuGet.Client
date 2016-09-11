@@ -105,7 +105,7 @@ namespace NuGet.ProjectModel
         /// Additional MSBuild properties.
         /// </summary>
         /// <remarks>Optional. This is normally set for internal use only.</remarks>
-        public ProjectRestoreMetadata MSBuildMetadata { get; set; }
+        public ProjectRestoreMetadata RestoreMetadata { get; set; }
 
         /// <summary>
         /// Gets a list of all properties found in the package spec, including

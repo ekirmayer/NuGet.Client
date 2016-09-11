@@ -93,7 +93,7 @@ namespace NuGet.ProjectModel
 
         private static void SetMSBuildMetadata(JObject json, PackageSpec packageSpec)
         {
-            var msbuildMetadata = packageSpec.MSBuildMetadata;
+            var msbuildMetadata = packageSpec.RestoreMetadata;
             if (msbuildMetadata == null)
             {
                 return;

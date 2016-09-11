@@ -287,16 +287,16 @@ namespace NuGet.Commands.Test
 
             // Create two net45 projects
             var spec1 = new PackageSpec(frameworks1);
-            spec1.MSBuildMetadata = new ProjectRestoreMetadata();
-            spec1.MSBuildMetadata.ProjectUniqueName = "project1";
-            spec1.MSBuildMetadata.ProjectName = "project1";
-            spec1.MSBuildMetadata.OutputType = RestoreOutputType.NETCore;
+            spec1.RestoreMetadata = new ProjectRestoreMetadata();
+            spec1.RestoreMetadata.ProjectUniqueName = "project1";
+            spec1.RestoreMetadata.ProjectName = "project1";
+            spec1.RestoreMetadata.OutputType = RestoreOutputType.NETCore;
 
             var spec2 = new PackageSpec(frameworks2);
-            spec2.MSBuildMetadata = new ProjectRestoreMetadata();
-            spec2.MSBuildMetadata.ProjectUniqueName = "project2";
-            spec2.MSBuildMetadata.ProjectName = "project2";
-            spec2.MSBuildMetadata.OutputType = RestoreOutputType.NETCore;
+            spec2.RestoreMetadata = new ProjectRestoreMetadata();
+            spec2.RestoreMetadata.ProjectUniqueName = "project2";
+            spec2.RestoreMetadata.ProjectName = "project2";
+            spec2.RestoreMetadata.OutputType = RestoreOutputType.NETCore;
 
             var specs = new[] { spec1, spec2 };
 
@@ -317,10 +317,10 @@ namespace NuGet.Commands.Test
                 File.WriteAllText(projPath1, string.Empty);
                 File.WriteAllText(projPath2, string.Empty);
 
-                spec1.MSBuildMetadata.ProjectPath = projPath1;
+                spec1.RestoreMetadata.ProjectPath = projPath1;
                 spec1.FilePath = projPath1;
                 spec1.Name = "project1";
-                spec2.MSBuildMetadata.ProjectPath = projPath2;
+                spec2.RestoreMetadata.ProjectPath = projPath2;
                 spec2.FilePath = projPath1;
                 spec2.Name = "project2";
 
@@ -328,8 +328,8 @@ namespace NuGet.Commands.Test
                 var objPath1 = Path.Combine(project1.FullName, "obj");
                 var objPath2 = Path.Combine(project2.FullName, "obj");
 
-                spec1.MSBuildMetadata.OutputPath = objPath1;
-                spec2.MSBuildMetadata.OutputPath = objPath2;
+                spec1.RestoreMetadata.OutputPath = objPath1;
+                spec2.RestoreMetadata.OutputPath = objPath2;
 
                 var lockPath1 = Path.Combine(objPath1, "project.assets.json");
                 var lockPath2 = Path.Combine(objPath2, "project.assets.json");
@@ -344,7 +344,7 @@ namespace NuGet.Commands.Test
                     }
                 });
 
-                spec1.MSBuildMetadata.ProjectReferences.Add(new ProjectRestoreReference()
+                spec1.RestoreMetadata.ProjectReferences.Add(new ProjectRestoreReference()
                 {
                     ProjectPath = projPath2,
                     ProjectUniqueName = "project2"
@@ -355,7 +355,7 @@ namespace NuGet.Commands.Test
 
                 foreach (var spec in specs)
                 {
-                    dgFile.AddRestore(spec.MSBuildMetadata.ProjectName);
+                    dgFile.AddRestore(spec.RestoreMetadata.ProjectName);
                     dgFile.AddProject(spec);
                 }
 

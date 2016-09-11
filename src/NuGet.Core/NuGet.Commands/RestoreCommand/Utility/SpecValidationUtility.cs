@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using NuGet.LibraryModel;
 using NuGet.ProjectModel;
 
@@ -25,7 +24,7 @@ namespace NuGet.Commands
 
             var restoreSet = new HashSet<string>(spec.Restore, StringComparer.Ordinal);
             var projectSet = new HashSet<string>(
-                spec.Projects.Select(p => p.MSBuildMetadata?.ProjectUniqueName)
+                spec.Projects.Select(p => p.RestoreMetadata?.ProjectUniqueName)
                 .Where(s => !string.IsNullOrEmpty(s)),
                 StringComparer.Ordinal);
 
@@ -59,11 +58,11 @@ namespace NuGet.Commands
             files.Push(spec.FilePath);
 
             // restore metadata must exist for all project types
-            var restoreMetadata = spec.MSBuildMetadata;
+            var restoreMetadata = spec.RestoreMetadata;
 
             if (restoreMetadata == null)
             {
-                var message = string.Format(CultureInfo.CurrentCulture, Strings.MissingRequiredProperty, nameof(spec.MSBuildMetadata));
+                var message = string.Format(CultureInfo.CurrentCulture, Strings.MissingRequiredProperty, nameof(spec.RestoreMetadata));
 
                 throw RestoreSpecException.Create(message, files);
             }
@@ -71,7 +70,7 @@ namespace NuGet.Commands
             // Track the project path
             files.Push(restoreMetadata.ProjectPath);
 
-            var outputType = spec.MSBuildMetadata?.OutputType;
+            var outputType = spec.RestoreMetadata?.OutputType;
 
             // Verify frameworks
             ValidateFrameworks(spec, files);
@@ -130,25 +129,25 @@ namespace NuGet.Commands
         private static void ValidateProjectSpecNetCore(PackageSpec spec, IEnumerable<string> files)
         {
             // NETCore may not specify a project.json file
-            if (!string.IsNullOrEmpty(spec.MSBuildMetadata.ProjectJsonPath))
+            if (!string.IsNullOrEmpty(spec.RestoreMetadata.ProjectJsonPath))
             {
                 var message = string.Format(
                     CultureInfo.CurrentCulture,
                     Strings.PropertyNotAllowedForProjectType,
                     RestoreOutputType.NETCore.ToString(),
-                    nameof(spec.MSBuildMetadata.ProjectJsonPath));
+                    nameof(spec.RestoreMetadata.ProjectJsonPath));
 
                 throw RestoreSpecException.Create(message, files);
             }
 
             // Output path must be set for netcore
-            if (string.IsNullOrEmpty(spec.MSBuildMetadata.OutputPath))
+            if (string.IsNullOrEmpty(spec.RestoreMetadata.OutputPath))
             {
                 var message = string.Format(
                     CultureInfo.CurrentCulture,
                     Strings.MissingRequiredPropertyForProjectType,
                     RestoreOutputType.NETCore.ToString(),
-                    nameof(spec.MSBuildMetadata.OutputPath));
+                    nameof(spec.RestoreMetadata.OutputPath));
 
                 throw RestoreSpecException.Create(message, files);
             }
@@ -163,26 +162,26 @@ namespace NuGet.Commands
             }
 
             // UAP must specify a project.json file
-            if (string.IsNullOrEmpty(spec.MSBuildMetadata.ProjectJsonPath)
-                || spec.MSBuildMetadata.ProjectJsonPath != spec.FilePath)
+            if (string.IsNullOrEmpty(spec.RestoreMetadata.ProjectJsonPath)
+                || spec.RestoreMetadata.ProjectJsonPath != spec.FilePath)
             {
                 var message = string.Format(
                     CultureInfo.CurrentCulture,
                     Strings.MissingRequiredPropertyForProjectType,
                     RestoreOutputType.UAP.ToString(),
-                    nameof(spec.MSBuildMetadata.ProjectJsonPath));
+                    nameof(spec.RestoreMetadata.ProjectJsonPath));
 
                 throw RestoreSpecException.Create(message, files);
             }
 
             // Do not allow changing the output path for UAP
-            if (!string.IsNullOrEmpty(spec.MSBuildMetadata.OutputPath))
+            if (!string.IsNullOrEmpty(spec.RestoreMetadata.OutputPath))
             {
                 var message = string.Format(
                     CultureInfo.CurrentCulture,
                     Strings.PropertyNotAllowedForProjectType,
                     RestoreOutputType.UAP.ToString(),
-                    nameof(spec.MSBuildMetadata.OutputPath));
+                    nameof(spec.RestoreMetadata.OutputPath));
 
                 throw RestoreSpecException.Create(message, files);
             }
@@ -191,12 +190,12 @@ namespace NuGet.Commands
         private static void ValidateProjectSpecOther(PackageSpec spec, IEnumerable<string> files)
         {
             // Unknown project types may not have a project.json path
-            if (spec.MSBuildMetadata.ProjectJsonPath != null)
+            if (spec.RestoreMetadata.ProjectJsonPath != null)
             {
                 var message = string.Format(
                     CultureInfo.CurrentCulture,
                     Strings.PropertyNotAllowed,
-                    nameof(spec.MSBuildMetadata.ProjectJsonPath));
+                    nameof(spec.RestoreMetadata.ProjectJsonPath));
 
                 throw RestoreSpecException.Create(message, files);
             }
@@ -231,7 +230,7 @@ namespace NuGet.Commands
                 StringComparer.OrdinalIgnoreCase);
 
             var externalReferences = new HashSet<string>(
-                spec.MSBuildMetadata.ProjectReferences.Select(p => p.ProjectUniqueName),
+                spec.RestoreMetadata.ProjectReferences.Select(p => p.ProjectUniqueName),
                 StringComparer.OrdinalIgnoreCase);
 
             foreach (var missing in externalReferences.Except(dependencies))
@@ -282,34 +281,34 @@ namespace NuGet.Commands
             }
 
             // unique name must be set
-            if (string.IsNullOrEmpty(spec.MSBuildMetadata.ProjectUniqueName))
+            if (string.IsNullOrEmpty(spec.RestoreMetadata.ProjectUniqueName))
             {
                 var message = string.Format(
                     CultureInfo.CurrentCulture,
                     Strings.MissingRequiredProperty,
-                    nameof(spec.MSBuildMetadata.ProjectUniqueName));
+                    nameof(spec.RestoreMetadata.ProjectUniqueName));
 
                 throw RestoreSpecException.Create(message, files);
             }
 
             // project name must be set
-            if (string.IsNullOrEmpty(spec.MSBuildMetadata.ProjectName))
+            if (string.IsNullOrEmpty(spec.RestoreMetadata.ProjectName))
             {
                 var message = string.Format(
                     CultureInfo.CurrentCulture,
                     Strings.MissingRequiredProperty,
-                    nameof(spec.MSBuildMetadata.ProjectName));
+                    nameof(spec.RestoreMetadata.ProjectName));
 
                 throw RestoreSpecException.Create(message, files);
             }
 
             // msbuild project path must be set
-            if (string.IsNullOrEmpty(spec.MSBuildMetadata.ProjectPath))
+            if (string.IsNullOrEmpty(spec.RestoreMetadata.ProjectPath))
             {
                 var message = string.Format(
                     CultureInfo.CurrentCulture,
                     Strings.MissingRequiredProperty,
-                    nameof(spec.MSBuildMetadata.ProjectPath));
+                    nameof(spec.RestoreMetadata.ProjectPath));
 
                 throw RestoreSpecException.Create(message, files);
             }

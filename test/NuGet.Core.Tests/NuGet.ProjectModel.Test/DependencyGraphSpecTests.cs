@@ -27,15 +27,15 @@ namespace NuGet.ProjectModel.Test
 
             // Assert
             Assert.Equal(3, xClosure.Count);
-            Assert.Equal("A55205E7-4D08-4672-8011-0925467CC45F", xClosure[0].MSBuildMetadata.ProjectUniqueName);
-            Assert.Equal("78A6AD3F-9FA5-47F6-A54E-84B46A48CB2F", xClosure[1].MSBuildMetadata.ProjectUniqueName);
-            Assert.Equal("44B29B8D-8413-42D2-8DF4-72225659619B", xClosure[2].MSBuildMetadata.ProjectUniqueName);
+            Assert.Equal("A55205E7-4D08-4672-8011-0925467CC45F", xClosure[0].RestoreMetadata.ProjectUniqueName);
+            Assert.Equal("78A6AD3F-9FA5-47F6-A54E-84B46A48CB2F", xClosure[1].RestoreMetadata.ProjectUniqueName);
+            Assert.Equal("44B29B8D-8413-42D2-8DF4-72225659619B", xClosure[2].RestoreMetadata.ProjectUniqueName);
 
             Assert.Equal(1, yClosure.Count);
-            Assert.Equal("78A6AD3F-9FA5-47F6-A54E-84B46A48CB2F", yClosure.Single().MSBuildMetadata.ProjectUniqueName);
+            Assert.Equal("78A6AD3F-9FA5-47F6-A54E-84B46A48CB2F", yClosure.Single().RestoreMetadata.ProjectUniqueName);
 
             Assert.Equal(1, zClosure.Count);
-            Assert.Equal("44B29B8D-8413-42D2-8DF4-72225659619B", zClosure.Single().MSBuildMetadata.ProjectUniqueName);
+            Assert.Equal("44B29B8D-8413-42D2-8DF4-72225659619B", zClosure.Single().RestoreMetadata.ProjectUniqueName);
         }
 
         [Fact]
@@ -73,7 +73,7 @@ namespace NuGet.ProjectModel.Test
 
             // Act
             var spec = JsonPackageSpecReader.GetPackageSpec(json, "x", "c:\\fake\\project.json");
-            var msbuildMetadata = spec.MSBuildMetadata;
+            var msbuildMetadata = spec.RestoreMetadata;
 
             // Assert
             Assert.NotNull(msbuildMetadata);
@@ -141,7 +141,7 @@ namespace NuGet.ProjectModel.Test
 
             var spec = new PackageSpec(frameworks);
             var msbuildMetadata = new ProjectRestoreMetadata();
-            spec.MSBuildMetadata = msbuildMetadata;
+            spec.RestoreMetadata = msbuildMetadata;
 
             msbuildMetadata.ProjectUniqueName = "A55205E7-4D08-4672-8011-0925467CC45F";
             msbuildMetadata.ProjectPath = "c:\\x\\x.csproj";
@@ -170,7 +170,7 @@ namespace NuGet.ProjectModel.Test
             // Act
             JsonPackageSpecWriter.WritePackageSpec(spec, json);
             var readSpec = JsonPackageSpecReader.GetPackageSpec(json.ToString(), "x", "c:\\fake\\project.json");
-            var msbuildMetadata2 = readSpec.MSBuildMetadata;
+            var msbuildMetadata2 = readSpec.RestoreMetadata;
 
             // Assert
             Assert.NotNull(msbuildMetadata2);

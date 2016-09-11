@@ -80,9 +80,9 @@ namespace NuGet.Commands
                 }
 
                 // Applies to all types
-                result.MSBuildMetadata.OutputType = restoreType;
-                result.MSBuildMetadata.ProjectPath = specItem.GetProperty("ProjectPath");
-                result.MSBuildMetadata.ProjectUniqueName = specItem.GetProperty("ProjectUniqueName");
+                result.RestoreMetadata.OutputType = restoreType;
+                result.RestoreMetadata.ProjectPath = specItem.GetProperty("ProjectPath");
+                result.RestoreMetadata.ProjectUniqueName = specItem.GetProperty("ProjectUniqueName");
 
                 // Read project references for all
                 AddProjectReferences(result, items);
@@ -145,7 +145,7 @@ namespace NuGet.Commands
             // Add project paths
             foreach (var msbuildDependency in flatReferences)
             {
-                spec.MSBuildMetadata.ProjectReferences.Add(msbuildDependency);
+                spec.RestoreMetadata.ProjectReferences.Add(msbuildDependency);
             }
         }
 
@@ -264,9 +264,9 @@ namespace NuGet.Commands
             // Read project.json
             result = JsonPackageSpecReader.GetPackageSpec(projectName, projectJsonPath);
 
-            result.MSBuildMetadata = new ProjectRestoreMetadata();
-            result.MSBuildMetadata.ProjectJsonPath = projectJsonPath;
-            result.MSBuildMetadata.ProjectName = projectName;
+            result.RestoreMetadata = new ProjectRestoreMetadata();
+            result.RestoreMetadata.ProjectJsonPath = projectJsonPath;
+            result.RestoreMetadata.ProjectName = projectName;
             return result;
         }
 
@@ -280,7 +280,7 @@ namespace NuGet.Commands
                 .ToList();
 
             var spec = new PackageSpec(frameworkInfo);
-            spec.MSBuildMetadata = new ProjectRestoreMetadata();
+            spec.RestoreMetadata = new ProjectRestoreMetadata();
 
             spec.FilePath = specItem.GetProperty("ProjectPath");
             spec.Name = specItem.GetProperty("ProjectName");

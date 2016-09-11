@@ -60,12 +60,12 @@ namespace NuGet.Commands
 
         private static ExternalProjectReference GetExternalProject(PackageSpec rootProject)
         {
-            var projectReferences = rootProject.MSBuildMetadata?.ProjectReferences ?? new List<ProjectRestoreReference>();
+            var projectReferences = rootProject.RestoreMetadata?.ProjectReferences ?? new List<ProjectRestoreReference>();
 
             return new ExternalProjectReference(
-                rootProject.MSBuildMetadata.ProjectUniqueName,
+                rootProject.RestoreMetadata.ProjectUniqueName,
                 rootProject,
-                rootProject.MSBuildMetadata?.ProjectPath,
+                rootProject.RestoreMetadata?.ProjectPath,
                 projectReferences.Select(p => p.ProjectUniqueName));
         }
 
@@ -105,8 +105,8 @@ namespace NuGet.Commands
                 disposeProviders: false);
 
             // Set output type
-            request.RestoreOutputType = project.PackageSpec?.MSBuildMetadata?.OutputType ?? RestoreOutputType.Unknown;
-            request.RestoreOutputPath = project.PackageSpec?.MSBuildMetadata?.OutputPath ?? rootPath;
+            request.RestoreOutputType = project.PackageSpec?.RestoreMetadata?.OutputType ?? RestoreOutputType.Unknown;
+            request.RestoreOutputPath = project.PackageSpec?.RestoreMetadata?.OutputPath ?? rootPath;
 
             // Standard properties
             restoreContext.ApplyStandardProperties(request);

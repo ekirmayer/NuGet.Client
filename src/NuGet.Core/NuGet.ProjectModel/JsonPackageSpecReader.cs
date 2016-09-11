@@ -169,7 +169,7 @@ namespace NuGet.ProjectModel
 
             packageSpec.PackOptions = GetPackOptions(packageSpec, rawPackageSpec);
 
-            packageSpec.MSBuildMetadata = GetMSBuildMetadata(packageSpec, rawPackageSpec);
+            packageSpec.RestoreMetadata = GetMSBuildMetadata(packageSpec, rawPackageSpec);
 
             // Read the runtime graph
             packageSpec.RuntimeGraph = JsonRuntimeFormat.ReadRuntimeGraph(rawPackageSpec);
@@ -177,14 +177,14 @@ namespace NuGet.ProjectModel
             // Read the name/path if it exists
             if (packageSpec.Name == null)
             {
-                packageSpec.Name = packageSpec.MSBuildMetadata?.ProjectName;
+                packageSpec.Name = packageSpec.RestoreMetadata?.ProjectName;
             }
 
             // Use the project.json path if one is set, otherwise use the project path
             if (packageSpec.FilePath == null)
             {
-                packageSpec.FilePath = packageSpec.MSBuildMetadata?.ProjectJsonPath
-                    ?? packageSpec.MSBuildMetadata?.ProjectPath;
+                packageSpec.FilePath = packageSpec.RestoreMetadata?.ProjectJsonPath
+                    ?? packageSpec.RestoreMetadata?.ProjectPath;
             }
 
             return packageSpec;

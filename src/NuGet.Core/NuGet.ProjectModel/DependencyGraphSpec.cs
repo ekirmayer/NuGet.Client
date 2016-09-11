@@ -108,7 +108,7 @@ namespace NuGet.ProjectModel
         private static IEnumerable<string> GetProjectReferenceNames(PackageSpec spec)
         {
             // Handle projects which may not have specs, and which may not have references
-            return spec?.MSBuildMetadata?.ProjectReferences?.Select(project => project.ProjectUniqueName)
+            return spec?.RestoreMetadata?.ProjectReferences?.Select(project => project.ProjectUniqueName)
                 ?? Enumerable.Empty<string>();
         }
 
@@ -120,7 +120,7 @@ namespace NuGet.ProjectModel
         public void AddProject(PackageSpec projectSpec)
         {
             // Find the unique name in the spec, otherwise generate a new one.
-            var projectUniqueName = projectSpec.MSBuildMetadata?.ProjectUniqueName
+            var projectUniqueName = projectSpec.RestoreMetadata?.ProjectUniqueName
                 ?? Guid.NewGuid().ToString();
 
             _projects.Add(projectUniqueName, projectSpec);
@@ -170,7 +170,7 @@ namespace NuGet.ProjectModel
                 var projectObj = new JObject();
                 JsonPackageSpecWriter.WritePackageSpec(project, projectObj);
 
-                restoreObj[project.MSBuildMetadata.ProjectUniqueName] = projectObj;
+                restoreObj[project.RestoreMetadata.ProjectUniqueName] = projectObj;
             }
 
             return json;
