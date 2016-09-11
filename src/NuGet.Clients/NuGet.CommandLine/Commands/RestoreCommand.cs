@@ -117,9 +117,6 @@ namespace NuGet.CommandLine
                     restoreContext.Log = Console;
                     restoreContext.CachingSourceProvider = GetSourceRepositoryProvider();
 
-                    // HACK: remove other inputs
-                    restoreContext.Inputs.Clear();
-
                     var packageSaveMode = EffectivePackageSaveMode;
                     if (packageSaveMode != Packaging.PackageSaveMode.None)
                     {
@@ -136,13 +133,21 @@ namespace NuGet.CommandLine
 
                     // Providers
                     // Use the settings loaded above in ReadSettings(restoreInputs)
-                    restoreContext.PreLoadedRequestProviders.Add(new DependencyGraphSpecRequestProvider(
-                        providerCache,
-                        restoreInputs.ProjectReferenceLookup,
-                        Settings));
+                    if (restoreInputs.ProjectReferenceLookup.Restore.Count > 0)
+                    {
+                        // Remove input list, everything has been loaded already
+                        restoreContext.Inputs.Clear();
 
-                    restoreContext.RequestProviders.Add(new DependencyGraphFileRequestProvider(providerCache));
-                    restoreContext.RequestProviders.Add(new ProjectJsonRestoreRequestProvider(providerCache));
+                        restoreContext.PreLoadedRequestProviders.Add(new DependencyGraphSpecRequestProvider(
+                            providerCache,
+                            restoreInputs.ProjectReferenceLookup,
+                            Settings));
+                    }
+                    else
+                    {
+                        // Allow an external .dg file
+                        restoreContext.RequestProviders.Add(new DependencyGraphFileRequestProvider(providerCache));
+                    }
 
                     // Run restore
                     var v3Summaries = await RestoreRunner.Run(restoreContext);
@@ -456,15 +461,10 @@ namespace NuGet.CommandLine
         private void GetInputsFromFile(string projectFilePath, PackageRestoreInputs packageRestoreInputs)
         {
             // An argument was passed in. It might be a solution file or directory,
-            // project file, project.json, or packages.config file
+            // project file, or packages.config file
             var projectFileName = Path.GetFileName(projectFilePath);
 
-            if (ProjectJsonPathUtilities.IsProjectConfig(projectFileName))
-            {
-                // project.json or projName.project.json
-                packageRestoreInputs.RestoreV3Context.Inputs.Add(projectFilePath);
-            }
-            else if (IsPackagesConfig(projectFileName))
+            if (IsPackagesConfig(projectFileName))
             {
                 // restoring from packages.config or packages.projectname.config file
                 packageRestoreInputs.PackagesConfigFiles.Add(projectFilePath);
@@ -482,16 +482,7 @@ namespace NuGet.CommandLine
                 // Check for project.json
                 if (File.Exists(projectJsonPath))
                 {
-                    if (MsBuildUtility.IsMsBuildBasedProject(projectFilePath))
-                    {
-                        // Add the project file path if it allows p2ps
-                        packageRestoreInputs.RestoreV3Context.Inputs.Add(projectFilePath);
-                    }
-                    else
-                    {
-                        // Unknown project type, add the project.json by itself
-                        packageRestoreInputs.RestoreV3Context.Inputs.Add(projectJsonPath);
-                    }
+                    packageRestoreInputs.RestoreV3Context.Inputs.Add(projectFilePath);
                 }
                 else if (File.Exists(packagesConfigPath))
                 {
@@ -563,26 +554,6 @@ namespace NuGet.CommandLine
                 packageRestoreInputs.PackagesConfigFiles.Add(packagesConfigFile);
 
                 return;
-            }
-
-            // Project.json is any directory
-            try
-            {
-                if (Directory.EnumerateFiles(directory, $"*{ProjectJsonPathUtilities.ProjectConfigFileName}", SearchOption.AllDirectories).Any())
-                {
-                    // V3 recursive project.json search
-                    packageRestoreInputs.RestoreV3Context.Inputs.Add(directory);
-
-                    return;
-                }
-            }
-            catch (UnauthorizedAccessException e)
-            {
-                // Access to a subpath of the directory is denied.
-                var resourceMessage = LocalizedResourceManager.GetString("Error_UnableToLocateRestoreTarget_Because");
-                var message = string.Format(CultureInfo.CurrentCulture, resourceMessage, directory);
-
-                throw new InvalidOperationException(message, e);
             }
 
             // The directory did not contain a valid target, fail!

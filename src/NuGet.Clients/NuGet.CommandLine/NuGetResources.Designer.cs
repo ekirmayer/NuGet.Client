@@ -3337,7 +3337,7 @@ namespace NuGet.CommandLine {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The folder &apos;{0}&apos; does not contain an msbuild solution, packages.config, or project.json file to restore..
+        ///   Looks up a localized string similar to The folder &apos;{0}&apos; does not contain an msbuild solution or packages.config file to restore..
         /// </summary>
         public static string Error_UnableToLocateRestoreTarget {
             get {

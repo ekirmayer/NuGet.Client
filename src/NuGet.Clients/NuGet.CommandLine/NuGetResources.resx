@@ -6080,7 +6080,7 @@ Oluşturma sırasında NuGet'in paketleri indirmesini önlemek için, Visual Stu
     <value>Source parameter was not specified.</value>
   </data>
   <data name="Error_UnableToLocateRestoreTarget" xml:space="preserve">
-    <value>The folder '{0}' does not contain an msbuild solution, packages.config, or project.json file to restore.</value>
+    <value>The folder '{0}' does not contain an msbuild solution or packages.config file to restore.</value>
   </data>
   <data name="Error_UnableToLocateRestoreTarget_Because" xml:space="preserve">
     <value>Failed to find an msbuild solution, packages.config, or project.json file in the folder '{0}'.</value>

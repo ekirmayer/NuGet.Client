@@ -89,15 +89,13 @@ namespace NuGet.CommandLine
 
             var nugetExePath = Assembly.GetEntryAssembly().Location;
 
-#if DEBUG
-            // Use the non-ILMerged path for debug
+            // Check for the non-ILMerged path
             var buildTasksPath = Path.Combine(Path.GetDirectoryName(nugetExePath), "NuGet.Build.Tasks.dll");
 
             if (File.Exists(buildTasksPath))
             {
                 nugetExePath = buildTasksPath;
             }
-#endif
 
             using (var entryPointTargetPath = new TempFile(".targets"))
             using (var resultsPath = new TempFile(".result"))
