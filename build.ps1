@@ -41,15 +41,9 @@ Skips building and running unit-tests
 .PARAMETER SkipILMerge
 Skips creating an ILMerged nuget.exe
 
-.PARAMETER Fast
-Combination of SkipTests, SkipSubModules, and SkipILMerge
-
 .EXAMPLE
 To run full clean build, e.g after switching branches:
 .\build.ps1 -CleanCache
-
-To run "incremental" fast build with no tests:
-.\build.ps1 -Fast
 
 To troubleshoot build issues:
 .\build.ps1 -Verbose -ErrorAction Stop
@@ -68,14 +62,9 @@ param (
     [switch]$SkipXProj,
     [switch]$SkipVS14,
     [switch]$SkipVS15,
-    [Parameter(ParameterSetName='RegularBuild')]
     [switch]$SkipSubModules,
-    [Parameter(ParameterSetName='RegularBuild')]
     [switch]$SkipTests,
-    [Parameter(ParameterSetName='RegularBuild')]
-    [switch]$SkipILMerge,
-    [Parameter(ParameterSetName='FastBuild')]
-    [switch]$Fast
+    [switch]$SkipILMerge
 )
 
 # For TeamCity - Incase any issue comes in this script fail the build. - Be default TeamCity returns exit code of 0 for all powershell even if it fails
@@ -93,8 +82,6 @@ trap {
 
 . "$PSScriptRoot\build\common.ps1"
 
-$RunTests = (-not $SkipTests) -and (-not $Fast)
-
 # Adjust version skipping if only one version installed - if VS15 is not installed, no need to specify SkipVS15
 $SkipVS14 = $SkipVS14 -or -not $VS14Installed
 $SkipVS15 = $SkipVS15 -or -not $VS15Installed
@@ -111,7 +98,7 @@ Trace-Log "Build #$BuildNumber started at $startTime"
 $BuildErrors = @()
 
 Invoke-BuildStep 'Updating sub-modules' { Update-SubModules } `
-    -skip:($SkipSubModules -or $Fast) `
+    -skip:$SkipSubModules `
     -ev +BuildErrors
 
 Invoke-BuildStep 'Cleaning artifacts' { Clear-Artifacts } `
@@ -146,28 +133,28 @@ Invoke-BuildStep 'Enabling delayed signing' {
     -ev +BuildErrors
 
 Invoke-BuildStep 'Building NuGet.Core projects' {
-        param($Configuration, $ReleaseLabel, $BuildNumber, $SkipRestore, $Fast)
-        Build-CoreProjects $Configuration $ReleaseLabel $BuildNumber -SkipRestore:$SkipRestore -Fast:$Fast
+        param($Configuration, $ReleaseLabel, $BuildNumber, $SkipRestore)
+        Build-CoreProjects $Configuration $ReleaseLabel $BuildNumber -SkipRestore:$SkipRestore
     } `
-    -args $Configuration, $ReleaseLabel, $BuildNumber, $SkipRestore, $Fast `
+    -args $Configuration, $ReleaseLabel, $BuildNumber, $SkipRestore `
     -skip:$SkipXProj `
     -ev +BuildErrors
 
 ## Building the VS15 Tooling solution
 Invoke-BuildStep 'Building NuGet.Clients projects - VS15 Toolset' {
-        param($Configuration, $ReleaseLabel, $BuildNumber, $SkipRestore, $Fast)
-        Build-ClientsProjects $Configuration $ReleaseLabel $BuildNumber -ToolsetVersion 15 -SkipRestore:$SkipRestore -Fast:$Fast
+        param($Configuration, $ReleaseLabel, $BuildNumber, $SkipRestore)
+        Build-ClientsProjects $Configuration $ReleaseLabel $BuildNumber -ToolsetVersion 15 -SkipRestore:$SkipRestore
     } `
-    -args $Configuration, $ReleaseLabel, $BuildNumber, $SkipRestore, $Fast `
+    -args $Configuration, $ReleaseLabel, $BuildNumber, $SkipRestore `
     -skip:$SkipVS15 `
     -ev +BuildErrors
 
 ## Building the VS14 Tooling solution
 Invoke-BuildStep 'Building NuGet.Clients projects - VS14 Toolset' {
-        param($Configuration, $ReleaseLabel, $BuildNumber, $SkipRestore, $Fast)
-        Build-ClientsProjects $Configuration $ReleaseLabel $BuildNumber -ToolsetVersion 14 -SkipRestore:$SkipRestore -Fast:$Fast
+        param($Configuration, $ReleaseLabel, $BuildNumber, $SkipRestore)
+        Build-ClientsProjects $Configuration $ReleaseLabel $BuildNumber -ToolsetVersion 14 -SkipRestore:$SkipRestore
     } `
-    -args $Configuration, $ReleaseLabel, $BuildNumber, $SkipRestore, $Fast `
+    -args $Configuration, $ReleaseLabel, $BuildNumber, $SkipRestore `
     -skip:$SkipVS14 `
     -ev +BuildErrors
 
@@ -177,7 +164,7 @@ Invoke-BuildStep 'Merging NuGet.exe' {
         Invoke-ILMerge $Configuration 14 $MSPFXPath
     } `
     -args $Configuration, $MSPFXPath `
-    -skip:($SkipILMerge -or $Fast -or $SkipVS14) `
+    -skip:($SkipILMerge -or $SkipVS14) `
     -ev +BuildErrors
 
 Invoke-BuildStep 'Running NuGet.Core tests' {
@@ -185,7 +172,7 @@ Invoke-BuildStep 'Running NuGet.Core tests' {
         Test-CoreProjects $Configuration
     } `
     -args $Configuration `
-    -skip:(-not $RunTests) `
+    -skip:($SkipTests -or $SkipXProj) `
     -ev +BuildErrors
 
 Invoke-BuildStep 'Running NuGet.Clients tests - VS15 Toolset' {
@@ -194,7 +181,7 @@ Invoke-BuildStep 'Running NuGet.Clients tests - VS15 Toolset' {
         Test-ClientsProjects $Configuration -ToolsetVersion 15 -SkipProjects 'NuGet.CommandLine.Test'
     } `
     -args $Configuration `
-    -skip:((-not $RunTests) -or $SkipVS15) `
+    -skip:($SkipTests -or $SkipVS15) `
     -ev +BuildErrors
 
 Invoke-BuildStep 'Running NuGet.Clients tests - VS14 Toolset' {
@@ -202,7 +189,7 @@ Invoke-BuildStep 'Running NuGet.Clients tests - VS14 Toolset' {
         Test-ClientsProjects $Configuration -ToolsetVersion 14
     } `
     -args $Configuration `
-    -skip:((-not $RunTests) -or $SkipVS14) `
+    -skip:($SkipTests -or $SkipVS14) `
     -ev +BuildErrors
 
 Trace-Log ('-' * 60)

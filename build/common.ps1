@@ -444,13 +444,12 @@ Function Build-CoreProjects {
         [string]$Configuration = $DefaultConfiguration,
         [string]$ReleaseLabel = $DefaultReleaseLabel,
         [int]$BuildNumber = (Get-BuildNumber),
-        [switch]$SkipRestore,
-        [switch]$Fast
+        [switch]$SkipRestore
     )
     $XProjectsLocation = Join-Path $NuGetClientRoot src\NuGet.Core
 
     if (-not $SkipRestore) {
-        Restore-XProjects $XProjectsLocation -Fast:$Fast
+        Restore-XProjects $XProjectsLocation
     }
 
     $xprojects = Find-XProjects $XProjectsLocation
@@ -582,8 +581,7 @@ Function Build-ClientsProjects {
         [int]$BuildNumber = (Get-BuildNumber),
         [ValidateSet(14,15)]
         [int]$ToolsetVersion = $DefaultMSBuildVersion,
-        [switch]$SkipRestore,
-        [switch]$Fast
+        [switch]$SkipRestore
     )
 
     $solutionPath = Join-Path $NuGetClientRoot NuGet.Clients.sln -Resolve
