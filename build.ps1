@@ -167,31 +167,6 @@ Invoke-BuildStep 'Merging NuGet.exe' {
     -skip:($SkipILMerge -or $SkipVS14) `
     -ev +BuildErrors
 
-Invoke-BuildStep 'Running NuGet.Core tests' {
-        param($Configuration)
-        Test-CoreProjects $Configuration
-    } `
-    -args $Configuration `
-    -skip:($SkipTests -or $SkipXProj) `
-    -ev +BuildErrors
-
-Invoke-BuildStep 'Running NuGet.Clients tests - VS15 Toolset' {
-        param($Configuration)
-        # We don't run command line tests on VS15 as we don't build a nuget.exe for this version
-        Test-ClientsProjects $Configuration -ToolsetVersion 15 -SkipProjects 'NuGet.CommandLine.Test'
-    } `
-    -args $Configuration `
-    -skip:($SkipTests -or $SkipVS15) `
-    -ev +BuildErrors
-
-Invoke-BuildStep 'Running NuGet.Clients tests - VS14 Toolset' {
-        param($Configuration)
-        Test-ClientsProjects $Configuration -ToolsetVersion 14
-    } `
-    -args $Configuration `
-    -skip:($SkipTests -or $SkipVS14) `
-    -ev +BuildErrors
-
 Trace-Log ('-' * 60)
 
 ## Calculating Build time

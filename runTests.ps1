@@ -77,20 +77,6 @@ Trace-Log "Test suite run #$BuildNumber started at $startTime"
 
 $BuildErrors = @()
 
-Invoke-BuildStep 'Installing NuGet.exe' { Install-NuGet } `
-    -ev +BuildErrors
-
-Invoke-BuildStep 'Installing dotnet CLI' { Install-DotnetCLI } `
-    -skip:$SkipXProj `
-    -ev +BuildErrors
-
-Invoke-BuildStep 'Restoring solution packages' { Restore-SolutionPackages } `
-    -ev +BuildErrors
-
-Invoke-BuildStep 'Restoring projects' { Restore-XProjects } `
-    -skip:$SkipXProj `
-    -ev +BuildErrors
-
 Invoke-BuildStep 'Running NuGet.Core unit-tests' {
         param($Configuration)
         Test-CoreProjects $Configuration
@@ -107,14 +93,6 @@ Invoke-BuildStep 'Running NuGet.Core functional tests' {
     -skip:($SkipXProj -or $SkipFuncTests) `
     -ev +BuildErrors
 
-Invoke-BuildStep 'Building NuGet.Clients projects - VS14 Toolset' {
-        param($Configuration)
-        Build-ClientsProjects $Configuration -ToolsetVersion 14
-    } `
-    -args $Configuration `
-    -skip:$SkipVS14 `
-    -ev +BuildErrors
-
 Invoke-BuildStep 'Running NuGet.Clients unit-tests - VS14 Toolset' {
         param($Configuration)
         Test-ClientsProjects $Configuration -ToolsetVersion 14
@@ -129,14 +107,6 @@ Invoke-BuildStep 'Running NuGet.Clients functional tests - VS14 Toolset' {
     } `
     -args $Configuration `
     -skip:($SkipVS14 -or $SkipFuncTests) `
-    -ev +BuildErrors
-
-Invoke-BuildStep 'Building NuGet.Clients projects - VS15 Toolset' {
-        param($Configuration)
-        Build-ClientsProjects $Configuration -ToolsetVersion 15
-    } `
-    -args $Configuration `
-    -skip:$SkipVS15 `
     -ev +BuildErrors
 
 Invoke-BuildStep 'Running NuGet.Clients tests - VS15 Toolset' {
