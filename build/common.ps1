@@ -43,7 +43,10 @@ Function Reset-Colors {
     $host.ui.rawui.ForegroundColor = $OrigFgColor
 }
 
-### Functions ###
+function Format-TeamCityMessage([string]$Text) {
+    $Text.Replace("|", "||").Replace("'", "|'").Replace("[", "|[").Replace("]", "|]").Replace("`n", "|n").Replace("`r", "|r")
+}
+
 Function Trace-Log($TraceMessage = '') {
     Write-Host "[$(Trace-Time)]`t$TraceMessage" -ForegroundColor Cyan
 }
@@ -385,7 +388,7 @@ Function Restore-XProjects {
 }
 
 Function Find-XProjects($XProjectsLocation) {
-    Get-ChildItem $XProjectsLocation -Recurse -Filter '*.xproj' |`
+    Get-ChildItem $XProjectsLocation -Recurse -Filter '*.xproj' |
         %{ Split-Path $_.FullName -Parent }
 }
 
@@ -433,7 +436,6 @@ Function Invoke-DotnetPack {
             }
         }
     }
-    End { }
 }
 
 Function Build-CoreProjects {

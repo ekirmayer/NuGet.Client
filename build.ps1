@@ -91,13 +91,6 @@ trap {
     exit 1
 }
 
-function Format-TeamCityMessage([string]$Text) {
-    $Text.Replace("|", "||").Replace("'", "|'").Replace("[", "|[").Replace("]", "|]").Replace("`n", "|n").Replace("`r", "|r")
-}
-
-$CLIRoot=$PSScriptRoot
-$env:DOTNET_INSTALL_DIR=$CLIRoot
-
 . "$PSScriptRoot\build\common.ps1"
 
 $RunTests = (-not $SkipTests) -and (-not $Fast)
@@ -188,7 +181,8 @@ Invoke-BuildStep 'Merging NuGet.exe' {
     -ev +BuildErrors
 
 Invoke-BuildStep 'Running NuGet.Core tests' {
-        Test-CoreProjects -Configuration $Configuration
+        param($Configuration)
+        Test-CoreProjects $Configuration
     } `
     -args $Configuration `
     -skip:(-not $RunTests) `
@@ -197,7 +191,7 @@ Invoke-BuildStep 'Running NuGet.Core tests' {
 Invoke-BuildStep 'Running NuGet.Clients tests - VS15 Toolset' {
         param($Configuration)
         # We don't run command line tests on VS15 as we don't build a nuget.exe for this version
-        Test-ClientsProjects -Configuration $Configuration -ToolsetVersion 15 -SkipProjects 'NuGet.CommandLine.Test'
+        Test-ClientsProjects $Configuration -ToolsetVersion 15 -SkipProjects 'NuGet.CommandLine.Test'
     } `
     -args $Configuration `
     -skip:((-not $RunTests) -or $SkipVS15) `
@@ -205,7 +199,7 @@ Invoke-BuildStep 'Running NuGet.Clients tests - VS15 Toolset' {
 
 Invoke-BuildStep 'Running NuGet.Clients tests - VS14 Toolset' {
         param($Configuration)
-        Test-ClientsProjects -Configuration $Configuration -ToolsetVersion 14
+        Test-ClientsProjects $Configuration -ToolsetVersion 14
     } `
     -args $Configuration `
     -skip:((-not $RunTests) -or $SkipVS14) `
